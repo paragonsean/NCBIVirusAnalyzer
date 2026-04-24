@@ -1,0 +1,1135 @@
+{
+  "format": "PatternMachine-v1",
+  "source_file": "c:\\Users\\spoca\\Downloads\\Plants\\sequences.fasta",
+  "params": {
+    "min_len": 7,
+    "max_len": 14,
+    "min_count": 80,
+    "max_terms": 160,
+    "candidate_pool": 2000,
+    "max_seqs": null,
+    "selection": "fast"
+  },
+  "dictionary": [
+    {
+      "token": "X_0001",
+      "pattern": "TGATGGA",
+      "count": 38821,
+      "score": 232926,
+      "length": 7
+    },
+    {
+      "token": "X_0002",
+      "pattern": "AAAGAAG",
+      "count": 37482,
+      "score": 224892,
+      "length": 7
+    },
+    {
+      "token": "X_0003",
+      "pattern": "TCAAAAT",
+      "count": 36117,
+      "score": 216702,
+      "length": 7
+    },
+    {
+      "token": "X_0004",
+      "pattern": "GAAATGG",
+      "count": 36068,
+      "score": 216408,
+      "length": 7
+    },
+    {
+      "token": "X_0005",
+      "pattern": "AAAAGAA",
+      "count": 35010,
+      "score": 210060,
+      "length": 7
+    },
+    {
+      "token": "X_0006",
+      "pattern": "GATGGAA",
+      "count": 33928,
+      "score": 203568,
+      "length": 7
+    },
+    {
+      "token": "X_0007",
+      "pattern": "TTGAAGA",
+      "count": 33510,
+      "score": 201060,
+      "length": 7
+    },
+    {
+      "token": "X_0008",
+      "pattern": "GGAAGAA",
+      "count": 32590,
+      "score": 195540,
+      "length": 7
+    },
+    {
+      "token": "X_0009",
+      "pattern": "AATGAAA",
+      "count": 32012,
+      "score": 192072,
+      "length": 7
+    },
+    {
+      "token": "X_0010",
+      "pattern": "TTGAAAA",
+      "count": 31632,
+      "score": 189792,
+      "length": 7
+    },
+    {
+      "token": "X_0011",
+      "pattern": "GAGGGAA",
+      "count": 31025,
+      "score": 186150,
+      "length": 7
+    },
+    {
+      "token": "X_0012",
+      "pattern": "AAGAAAA",
+      "count": 30533,
+      "score": 183198,
+      "length": 7
+    },
+    {
+      "token": "X_0013",
+      "pattern": "ATTGAAG",
+      "count": 30358,
+      "score": 182148,
+      "length": 7
+    },
+    {
+      "token": "X_0014",
+      "pattern": "GGAAAAG",
+      "count": 30323,
+      "score": 181938,
+      "length": 7
+    },
+    {
+      "token": "X_0015",
+      "pattern": "CAAATTG",
+      "count": 29631,
+      "score": 177786,
+      "length": 7
+    },
+    {
+      "token": "X_0016",
+      "pattern": "CAATGAA",
+      "count": 29415,
+      "score": 176490,
+      "length": 7
+    },
+    {
+      "token": "X_0017",
+      "pattern": "CAGCAGA",
+      "count": 29411,
+      "score": 176466,
+      "length": 7
+    },
+    {
+      "token": "X_0018",
+      "pattern": "GGGAAAA",
+      "count": 29405,
+      "score": 176430,
+      "length": 7
+    },
+    {
+      "token": "X_0019",
+      "pattern": "GGGAAGA",
+      "count": 29363,
+      "score": 176178,
+      "length": 7
+    },
+    {
+      "token": "X_0020",
+      "pattern": "CAGAATG",
+      "count": 29293,
+      "score": 175758,
+      "length": 7
+    },
+    {
+      "token": "X_0021",
+      "pattern": "TGAGAAT",
+      "count": 28714,
+      "score": 172284,
+      "length": 7
+    },
+    {
+      "token": "X_0022",
+      "pattern": "GGAAATG",
+      "count": 28599,
+      "score": 171594,
+      "length": 7
+    },
+    {
+      "token": "X_0023",
+      "pattern": "CAAAATG",
+      "count": 28410,
+      "score": 170460,
+      "length": 7
+    },
+    {
+      "token": "X_0024",
+      "pattern": "AATGAGA",
+      "count": 28205,
+      "score": 169230,
+      "length": 7
+    },
+    {
+      "token": "X_0025",
+      "pattern": "AACAATG",
+      "count": 28195,
+      "score": 169170,
+      "length": 7
+    },
+    {
+      "token": "X_0026",
+      "pattern": "AATGGAA",
+      "count": 28179,
+      "score": 169074,
+      "length": 7
+    },
+    {
+      "token": "X_0027",
+      "pattern": "AATTGAA",
+      "count": 27395,
+      "score": 164370,
+      "length": 7
+    },
+    {
+      "token": "X_0028",
+      "pattern": "GGAATGG",
+      "count": 27359,
+      "score": 164154,
+      "length": 7
+    },
+    {
+      "token": "X_0029",
+      "pattern": "AGAAATG",
+      "count": 27334,
+      "score": 164004,
+      "length": 7
+    },
+    {
+      "token": "X_0030",
+      "pattern": "ATTTGAA",
+      "count": 27257,
+      "score": 163542,
+      "length": 7
+    },
+    {
+      "token": "X_0031",
+      "pattern": "AAATGGA",
+      "count": 27218,
+      "score": 163308,
+      "length": 7
+    },
+    {
+      "token": "X_0032",
+      "pattern": "TGACAAA",
+      "count": 27104,
+      "score": 162624,
+      "length": 7
+    },
+    {
+      "token": "X_0033",
+      "pattern": "ACAAAGA",
+      "count": 27078,
+      "score": 162468,
+      "length": 7
+    },
+    {
+      "token": "X_0034",
+      "pattern": "AAATTGG",
+      "count": 26709,
+      "score": 160254,
+      "length": 7
+    },
+    {
+      "token": "X_0035",
+      "pattern": "TTCAAAAT",
+      "count": 22775,
+      "score": 159425,
+      "length": 8
+    },
+    {
+      "token": "X_0036",
+      "pattern": "CAAAGAA",
+      "count": 26547,
+      "score": 159282,
+      "length": 7
+    },
+    {
+      "token": "X_0037",
+      "pattern": "TCCAAAT",
+      "count": 26500,
+      "score": 159000,
+      "length": 7
+    },
+    {
+      "token": "X_0038",
+      "pattern": "TTTGAAA",
+      "count": 26425,
+      "score": 158550,
+      "length": 7
+    },
+    {
+      "token": "X_0039",
+      "pattern": "GACCAAA",
+      "count": 25932,
+      "score": 155592,
+      "length": 7
+    },
+    {
+      "token": "X_0040",
+      "pattern": "GGAACAA",
+      "count": 25906,
+      "score": 155436,
+      "length": 7
+    },
+    {
+      "token": "X_0041",
+      "pattern": "ATGGAAA",
+      "count": 25849,
+      "score": 155094,
+      "length": 7
+    },
+    {
+      "token": "X_0042",
+      "pattern": "GAACAAG",
+      "count": 25653,
+      "score": 153918,
+      "length": 7
+    },
+    {
+      "token": "X_0043",
+      "pattern": "AATGGGA",
+      "count": 25578,
+      "score": 153468,
+      "length": 7
+    },
+    {
+      "token": "X_0044",
+      "pattern": "TCAGAAT",
+      "count": 25434,
+      "score": 152604,
+      "length": 7
+    },
+    {
+      "token": "X_0045",
+      "pattern": "TTTCAAA",
+      "count": 24953,
+      "score": 149718,
+      "length": 7
+    },
+    {
+      "token": "X_0046",
+      "pattern": "AAAGAGG",
+      "count": 24730,
+      "score": 148380,
+      "length": 7
+    },
+    {
+      "token": "X_0047",
+      "pattern": "AGAAAAA",
+      "count": 24641,
+      "score": 147846,
+      "length": 7
+    },
+    {
+      "token": "X_0048",
+      "pattern": "ATGAGAA",
+      "count": 24637,
+      "score": 147822,
+      "length": 7
+    },
+    {
+      "token": "X_0049",
+      "pattern": "AAGAAAT",
+      "count": 24172,
+      "score": 145032,
+      "length": 7
+    },
+    {
+      "token": "X_0050",
+      "pattern": "CTTCAAA",
+      "count": 24137,
+      "score": 144822,
+      "length": 7
+    },
+    {
+      "token": "X_0051",
+      "pattern": "AAAATGG",
+      "count": 23887,
+      "score": 143322,
+      "length": 7
+    },
+    {
+      "token": "X_0052",
+      "pattern": "TGTGGAT",
+      "count": 23870,
+      "score": 143220,
+      "length": 7
+    },
+    {
+      "token": "X_0053",
+      "pattern": "GAAGAAA",
+      "count": 23628,
+      "score": 141768,
+      "length": 7
+    },
+    {
+      "token": "X_0054",
+      "pattern": "GATGGAAA",
+      "count": 20074,
+      "score": 140518,
+      "length": 8
+    },
+    {
+      "token": "X_0055",
+      "pattern": "AAAAACA",
+      "count": 23380,
+      "score": 140280,
+      "length": 7
+    },
+    {
+      "token": "X_0056",
+      "pattern": "TGATGGAA",
+      "count": 19981,
+      "score": 139867,
+      "length": 8
+    },
+    {
+      "token": "X_0057",
+      "pattern": "AAAACAA",
+      "count": 23191,
+      "score": 139146,
+      "length": 7
+    },
+    {
+      "token": "X_0058",
+      "pattern": "TGCAACA",
+      "count": 23096,
+      "score": 138576,
+      "length": 7
+    },
+    {
+      "token": "X_0059",
+      "pattern": "ATGGTGG",
+      "count": 22890,
+      "score": 137340,
+      "length": 7
+    },
+    {
+      "token": "X_0060",
+      "pattern": "ATGGAAG",
+      "count": 22782,
+      "score": 136692,
+      "length": 7
+    },
+    {
+      "token": "X_0061",
+      "pattern": "TGGGAAA",
+      "count": 22599,
+      "score": 135594,
+      "length": 7
+    },
+    {
+      "token": "X_0062",
+      "pattern": "ATGGAAC",
+      "count": 22440,
+      "score": 134640,
+      "length": 7
+    },
+    {
+      "token": "X_0063",
+      "pattern": "ACAGGGA",
+      "count": 22259,
+      "score": 133554,
+      "length": 7
+    },
+    {
+      "token": "X_0064",
+      "pattern": "AAAAGCA",
+      "count": 22191,
+      "score": 133146,
+      "length": 7
+    },
+    {
+      "token": "X_0065",
+      "pattern": "TTCATCA",
+      "count": 22182,
+      "score": 133092,
+      "length": 7
+    },
+    {
+      "token": "X_0066",
+      "pattern": "ATTGGGA",
+      "count": 22177,
+      "score": 133062,
+      "length": 7
+    },
+    {
+      "token": "X_0067",
+      "pattern": "ATGGAGA",
+      "count": 22164,
+      "score": 132984,
+      "length": 7
+    },
+    {
+      "token": "X_0068",
+      "pattern": "AGAGAAA",
+      "count": 22007,
+      "score": 132042,
+      "length": 7
+    },
+    {
+      "token": "X_0069",
+      "pattern": "ATGGAAT",
+      "count": 21939,
+      "score": 131634,
+      "length": 7
+    },
+    {
+      "token": "X_0070",
+      "pattern": "TGAGGGAA",
+      "count": 18757,
+      "score": 131299,
+      "length": 8
+    },
+    {
+      "token": "X_0071",
+      "pattern": "ATCAATG",
+      "count": 21864,
+      "score": 131184,
+      "length": 7
+    },
+    {
+      "token": "X_0072",
+      "pattern": "TTGAGGA",
+      "count": 21850,
+      "score": 131100,
+      "length": 7
+    },
+    {
+      "token": "X_0073",
+      "pattern": "GAAAACA",
+      "count": 21820,
+      "score": 130920,
+      "length": 7
+    },
+    {
+      "token": "X_0074",
+      "pattern": "GAAGTGG",
+      "count": 21818,
+      "score": 130908,
+      "length": 7
+    },
+    {
+      "token": "X_0075",
+      "pattern": "GAATGGA",
+      "count": 21778,
+      "score": 130668,
+      "length": 7
+    },
+    {
+      "token": "X_0076",
+      "pattern": "AATGGTT",
+      "count": 21719,
+      "score": 130314,
+      "length": 7
+    },
+    {
+      "token": "X_0077",
+      "pattern": "GAAATTG",
+      "count": 21702,
+      "score": 130212,
+      "length": 7
+    },
+    {
+      "token": "X_0078",
+      "pattern": "CAAAATA",
+      "count": 21589,
+      "score": 129534,
+      "length": 7
+    },
+    {
+      "token": "X_0079",
+      "pattern": "CATTTGA",
+      "count": 21549,
+      "score": 129294,
+      "length": 7
+    },
+    {
+      "token": "X_0080",
+      "pattern": "CAGAAAT",
+      "count": 21502,
+      "score": 129012,
+      "length": 7
+    },
+    {
+      "token": "X_0081",
+      "pattern": "AAAGAAA",
+      "count": 21477,
+      "score": 128862,
+      "length": 7
+    },
+    {
+      "token": "X_0082",
+      "pattern": "TGAAGAA",
+      "count": 21382,
+      "score": 128292,
+      "length": 7
+    },
+    {
+      "token": "X_0083",
+      "pattern": "GCAACAT",
+      "count": 21335,
+      "score": 128010,
+      "length": 7
+    },
+    {
+      "token": "X_0084",
+      "pattern": "AATAAGA",
+      "count": 21327,
+      "score": 127962,
+      "length": 7
+    },
+    {
+      "token": "X_0085",
+      "pattern": "AGCATGG",
+      "count": 21268,
+      "score": 127608,
+      "length": 7
+    },
+    {
+      "token": "X_0086",
+      "pattern": "GTGGATG",
+      "count": 21246,
+      "score": 127476,
+      "length": 7
+    },
+    {
+      "token": "X_0087",
+      "pattern": "ATCCAAA",
+      "count": 21116,
+      "score": 126696,
+      "length": 7
+    },
+    {
+      "token": "X_0088",
+      "pattern": "TTGAGAA",
+      "count": 21098,
+      "score": 126588,
+      "length": 7
+    },
+    {
+      "token": "X_0089",
+      "pattern": "TTCAAAATA",
+      "count": 15809,
+      "score": 126472,
+      "length": 9
+    },
+    {
+      "token": "X_0090",
+      "pattern": "AAACAAT",
+      "count": 21073,
+      "score": 126438,
+      "length": 7
+    },
+    {
+      "token": "X_0091",
+      "pattern": "AATGGAT",
+      "count": 21019,
+      "score": 126114,
+      "length": 7
+    },
+    {
+      "token": "X_0092",
+      "pattern": "AAGAAGA",
+      "count": 20998,
+      "score": 125988,
+      "length": 7
+    },
+    {
+      "token": "X_0093",
+      "pattern": "AGCATTG",
+      "count": 20768,
+      "score": 124608,
+      "length": 7
+    },
+    {
+      "token": "X_0094",
+      "pattern": "ACAATGG",
+      "count": 20765,
+      "score": 124590,
+      "length": 7
+    },
+    {
+      "token": "X_0095",
+      "pattern": "GGATCAA",
+      "count": 20741,
+      "score": 124446,
+      "length": 7
+    },
+    {
+      "token": "X_0096",
+      "pattern": "AAAACAT",
+      "count": 20722,
+      "score": 124332,
+      "length": 7
+    },
+    {
+      "token": "X_0097",
+      "pattern": "AATGGTG",
+      "count": 20670,
+      "score": 124020,
+      "length": 7
+    },
+    {
+      "token": "X_0098",
+      "pattern": "GAAATGA",
+      "count": 20572,
+      "score": 123432,
+      "length": 7
+    },
+    {
+      "token": "X_0099",
+      "pattern": "AAAATGC",
+      "count": 20544,
+      "score": 123264,
+      "length": 7
+    },
+    {
+      "token": "X_0100",
+      "pattern": "GAGAACA",
+      "count": 20523,
+      "score": 123138,
+      "length": 7
+    },
+    {
+      "token": "X_0101",
+      "pattern": "ATTGAAGA",
+      "count": 17576,
+      "score": 123032,
+      "length": 8
+    },
+    {
+      "token": "X_0102",
+      "pattern": "CATCAGA",
+      "count": 20485,
+      "score": 122910,
+      "length": 7
+    },
+    {
+      "token": "X_0103",
+      "pattern": "TGGATGG",
+      "count": 20483,
+      "score": 122898,
+      "length": 7
+    },
+    {
+      "token": "X_0104",
+      "pattern": "AAATGGC",
+      "count": 20471,
+      "score": 122826,
+      "length": 7
+    },
+    {
+      "token": "X_0105",
+      "pattern": "ATCAGAA",
+      "count": 20446,
+      "score": 122676,
+      "length": 7
+    },
+    {
+      "token": "X_0106",
+      "pattern": "GAAGAAC",
+      "count": 20428,
+      "score": 122568,
+      "length": 7
+    },
+    {
+      "token": "X_0107",
+      "pattern": "ACAATAG",
+      "count": 20420,
+      "score": 122520,
+      "length": 7
+    },
+    {
+      "token": "X_0108",
+      "pattern": "GAAAATG",
+      "count": 20417,
+      "score": 122502,
+      "length": 7
+    },
+    {
+      "token": "X_0109",
+      "pattern": "GAAGGAA",
+      "count": 20380,
+      "score": 122280,
+      "length": 7
+    },
+    {
+      "token": "X_0110",
+      "pattern": "ATTTCAA",
+      "count": 20372,
+      "score": 122232,
+      "length": 7
+    },
+    {
+      "token": "X_0111",
+      "pattern": "TGCATCA",
+      "count": 20315,
+      "score": 121890,
+      "length": 7
+    },
+    {
+      "token": "X_0112",
+      "pattern": "AGGGAAG",
+      "count": 20309,
+      "score": 121854,
+      "length": 7
+    },
+    {
+      "token": "X_0113",
+      "pattern": "ATGATAA",
+      "count": 20270,
+      "score": 121620,
+      "length": 7
+    },
+    {
+      "token": "X_0114",
+      "pattern": "ATGGGAA",
+      "count": 20237,
+      "score": 121422,
+      "length": 7
+    },
+    {
+      "token": "X_0115",
+      "pattern": "CATTGAA",
+      "count": 20229,
+      "score": 121374,
+      "length": 7
+    },
+    {
+      "token": "X_0116",
+      "pattern": "GGAGACA",
+      "count": 20212,
+      "score": 121272,
+      "length": 7
+    },
+    {
+      "token": "X_0117",
+      "pattern": "TCAATGG",
+      "count": 20143,
+      "score": 120858,
+      "length": 7
+    },
+    {
+      "token": "X_0118",
+      "pattern": "AGGACAA",
+      "count": 20133,
+      "score": 120798,
+      "length": 7
+    },
+    {
+      "token": "X_0119",
+      "pattern": "CCAACAA",
+      "count": 19956,
+      "score": 119736,
+      "length": 7
+    },
+    {
+      "token": "X_0120",
+      "pattern": "CAAATCA",
+      "count": 19952,
+      "score": 119712,
+      "length": 7
+    },
+    {
+      "token": "X_0121",
+      "pattern": "TCCAAAA",
+      "count": 19892,
+      "score": 119352,
+      "length": 7
+    },
+    {
+      "token": "X_0122",
+      "pattern": "GAAAAGA",
+      "count": 19808,
+      "score": 118848,
+      "length": 7
+    },
+    {
+      "token": "X_0123",
+      "pattern": "AGAATAA",
+      "count": 19783,
+      "score": 118698,
+      "length": 7
+    },
+    {
+      "token": "X_0124",
+      "pattern": "AGAATGG",
+      "count": 19700,
+      "score": 118200,
+      "length": 7
+    },
+    {
+      "token": "X_0125",
+      "pattern": "GAAAAAG",
+      "count": 19685,
+      "score": 118110,
+      "length": 7
+    },
+    {
+      "token": "X_0126",
+      "pattern": "ACATTTG",
+      "count": 19681,
+      "score": 118086,
+      "length": 7
+    },
+    {
+      "token": "X_0127",
+      "pattern": "AGAACAA",
+      "count": 19668,
+      "score": 118008,
+      "length": 7
+    },
+    {
+      "token": "X_0128",
+      "pattern": "ACAAGGA",
+      "count": 19540,
+      "score": 117240,
+      "length": 7
+    },
+    {
+      "token": "X_0129",
+      "pattern": "ATGGATG",
+      "count": 19470,
+      "score": 116820,
+      "length": 7
+    },
+    {
+      "token": "X_0130",
+      "pattern": "AACAAGG",
+      "count": 19446,
+      "score": 116676,
+      "length": 7
+    },
+    {
+      "token": "X_0131",
+      "pattern": "CCAAAGA",
+      "count": 19372,
+      "score": 116232,
+      "length": 7
+    },
+    {
+      "token": "X_0132",
+      "pattern": "CAAGCAG",
+      "count": 19278,
+      "score": 115668,
+      "length": 7
+    },
+    {
+      "token": "X_0133",
+      "pattern": "CTGAAGT",
+      "count": 19272,
+      "score": 115632,
+      "length": 7
+    },
+    {
+      "token": "X_0134",
+      "pattern": "ATGCAAC",
+      "count": 19269,
+      "score": 115614,
+      "length": 7
+    },
+    {
+      "token": "X_0135",
+      "pattern": "ATGAACA",
+      "count": 19251,
+      "score": 115506,
+      "length": 7
+    },
+    {
+      "token": "X_0136",
+      "pattern": "AATTGGG",
+      "count": 19234,
+      "score": 115404,
+      "length": 7
+    },
+    {
+      "token": "X_0137",
+      "pattern": "GGGAATG",
+      "count": 19177,
+      "score": 115062,
+      "length": 7
+    },
+    {
+      "token": "X_0138",
+      "pattern": "TGGTTCA",
+      "count": 19174,
+      "score": 115044,
+      "length": 7
+    },
+    {
+      "token": "X_0139",
+      "pattern": "AACCAAC",
+      "count": 19162,
+      "score": 114972,
+      "length": 7
+    },
+    {
+      "token": "X_0140",
+      "pattern": "AAAGAAC",
+      "count": 19156,
+      "score": 114936,
+      "length": 7
+    },
+    {
+      "token": "X_0141",
+      "pattern": "GAAGCAA",
+      "count": 19111,
+      "score": 114666,
+      "length": 7
+    },
+    {
+      "token": "X_0142",
+      "pattern": "TGTGGATG",
+      "count": 16378,
+      "score": 114646,
+      "length": 8
+    },
+    {
+      "token": "X_0143",
+      "pattern": "GAGAAAT",
+      "count": 19104,
+      "score": 114624,
+      "length": 7
+    },
+    {
+      "token": "X_0144",
+      "pattern": "CAAATGT",
+      "count": 19067,
+      "score": 114402,
+      "length": 7
+    },
+    {
+      "token": "X_0145",
+      "pattern": "GCAACTG",
+      "count": 19012,
+      "score": 114072,
+      "length": 7
+    },
+    {
+      "token": "X_0146",
+      "pattern": "AGGAGTG",
+      "count": 18978,
+      "score": 113868,
+      "length": 7
+    },
+    {
+      "token": "X_0147",
+      "pattern": "AGGATCA",
+      "count": 18956,
+      "score": 113736,
+      "length": 7
+    },
+    {
+      "token": "X_0148",
+      "pattern": "AGCAGAA",
+      "count": 18945,
+      "score": 113670,
+      "length": 7
+    },
+    {
+      "token": "X_0149",
+      "pattern": "CTTATGA",
+      "count": 18944,
+      "score": 113664,
+      "length": 7
+    },
+    {
+      "token": "X_0150",
+      "pattern": "GAAATTGG",
+      "count": 16198,
+      "score": 113386,
+      "length": 8
+    },
+    {
+      "token": "X_0151",
+      "pattern": "AATTGGA",
+      "count": 18883,
+      "score": 113298,
+      "length": 7
+    },
+    {
+      "token": "X_0152",
+      "pattern": "TGGATTC",
+      "count": 18878,
+      "score": 113268,
+      "length": 7
+    },
+    {
+      "token": "X_0153",
+      "pattern": "AAACAAA",
+      "count": 18874,
+      "score": 113244,
+      "length": 7
+    },
+    {
+      "token": "X_0154",
+      "pattern": "TGACCAA",
+      "count": 18860,
+      "score": 113160,
+      "length": 7
+    },
+    {
+      "token": "X_0155",
+      "pattern": "CAAAAGA",
+      "count": 18831,
+      "score": 112986,
+      "length": 7
+    },
+    {
+      "token": "X_0156",
+      "pattern": "GTCAAAA",
+      "count": 18752,
+      "score": 112512,
+      "length": 7
+    },
+    {
+      "token": "X_0157",
+      "pattern": "AGGAAGA",
+      "count": 18697,
+      "score": 112182,
+      "length": 7
+    },
+    {
+      "token": "X_0158",
+      "pattern": "CCAAAAG",
+      "count": 18662,
+      "score": 111972,
+      "length": 7
+    },
+    {
+      "token": "X_0159",
+      "pattern": "AAAAGAAG",
+      "count": 15882,
+      "score": 111174,
+      "length": 8
+    },
+    {
+      "token": "X_0160",
+      "pattern": "ATGACCA",
+      "count": 18501,
+      "score": 111006,
+      "length": 7
+    }
+  ]
+}

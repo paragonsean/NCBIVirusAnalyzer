@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Biology 123 — Master Cheatsheet</title>
+<style>
+  :root {
+    --repro: #8E44AD;
+    --trans: #C0392B;
+    --gas:   #1E8449;
+    --dark:  #1B2631;
+    --accent:#2874A6;
+    --bg1:   #F4ECF7;
+    --bg2:   #FDEDEC;
+    --bg3:   #EAFAF1;
+    --neut:  #EBEDEF;
+    --muted: #566573;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    color: var(--dark);
+    line-height: 1.4;
+    margin: 0;
+    padding: 24px;
+    background: #f7f7f8;
+    font-size: 14px;
+  }
+  .sheet {
+    max-width: 1050px;
+    margin: 0 auto;
+    background: white;
+    padding: 28px 34px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    border-radius: 8px;
+  }
+  h1 { text-align: center; font-size: 26px; margin: 0 0 4px; color: var(--dark); }
+  .subtitle { text-align: center; color: var(--muted); margin: 0 0 18px; font-size: 14px; }
+  .page-banner, .section-banner {
+    color: white; padding: 8px 14px; font-weight: 700; border-radius: 4px;
+    margin: 18px 0 8px;
+  }
+  .page-banner { font-size: 17px; }
+  .section-banner { font-size: 13px; padding: 5px 12px; margin-top: 12px; }
+  .bg-dark { background: var(--dark); }
+  .bg-repro { background: var(--repro); }
+  .bg-trans { background: var(--trans); }
+  .bg-gas { background: var(--gas); }
+  .tinted {
+    padding: 10px 14px; border-radius: 4px; margin-bottom: 8px; font-size: 13.5px;
+  }
+  .t-neut { background: var(--neut); }
+  .t-bg1 { background: var(--bg1); }
+  .t-bg2 { background: var(--bg2); }
+  .t-bg3 { background: var(--bg3); }
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  h3.sh {
+    color: var(--accent); font-size: 13.5px; margin: 8px 0 3px;
+  }
+  ul { margin: 2px 0 6px 18px; padding: 0; }
+  ul ul { margin-left: 16px; list-style: circle; }
+  li { margin: 2px 0; font-size: 13px; }
+  table {
+    width: 100%; border-collapse: collapse; margin: 6px 0 10px; font-size: 12.5px;
+  }
+  th { color: white; text-align: left; padding: 5px 8px; }
+  td { padding: 5px 8px; border: 1px solid #BDC3C7; vertical-align: top; }
+  tr:nth-child(even) td { background: #F2F4F4; }
+  tr:nth-child(odd) td { background: #FBFCFC; }
+  .th-repro th { background: var(--repro); }
+  .th-trans th { background: var(--trans); }
+  .th-gas th   { background: var(--gas); }
+  sub, sup { font-size: 0.7em; }
+  .footer-note { text-align:center; color: var(--muted); font-size: 11px; margin-top: 14px; }
+  @media print {
+    body { background: white; padding: 0; font-size: 11.5pt; }
+    .sheet { box-shadow: none; border-radius: 0; max-width: none; padding: 0.4in; }
+  }
+</style>
+</head>
+<body>
+<div class="sheet">
+
+<h1>Biology 123 — Master Cheatsheet</h1>
+<div class="subtitle">Reproduction • Transport • Gas Exchange</div>
+
+<div class="section-banner bg-dark">Shared Fundamentals Across the Unit</div>
+<div class="tinted t-neut">
+  <b>One logic:</b> life runs on exchanges across surfaces. Every rate obeys
+  <b>Fick's Law: Rate = (A × ΔP) / D.</b> Maximize surface area (A), keep the gradient (ΔP) high,
+  minimize distance (D). Lungs, gills, tracheae, capillaries, stomata, and leaves all follow this rule.
+  Transport systems exist because large bodies cannot rely on diffusion alone — as size grows,
+  <b>surface-area-to-volume ratio</b> drops, so cells need help getting supplies and dumping wastes.
+</div>
+<div class="cols">
+  <ul>
+    <li><b>Diffusion:</b> passive high → low concentration; no ATP.</li>
+    <li><b>Osmosis:</b> water diffusion across a semipermeable membrane.</li>
+    <li><b>Gradient:</b> difference that drives movement (pressure, concentration, water potential).</li>
+    <li><b>SA : V ratio:</b> small organisms diffuse directly; large ones evolve transport.</li>
+    <li><b>Mitosis vs. meiosis:</b> identical diploids (asexual) vs. recombined haploids (sexual).</li>
+    <li><b>Gamete:</b> haploid sex cell (sperm, egg, pollen, ovule).</li>
+    <li><b>Zygote:</b> diploid cell formed at fertilization.</li>
+  </ul>
+  <ul>
+    <li><b>Haploid / Diploid:</b> 1 vs. 2 sets of chromosomes (n vs. 2n).</li>
+    <li><b>Cohesion / Adhesion:</b> water-water / water-wall — drives xylem.</li>
+    <li><b>Source / Sink:</b> sugar producer (leaf) / sugar user (root, fruit, seed).</li>
+    <li><b>Endotherm / Ectotherm:</b> generates / absorbs heat; endotherms demand more O<sub>2</sub>.</li>
+    <li><b>ATP:</b> cellular energy currency made by respiration.</li>
+    <li><b>Hypotonic / Hypertonic / Isotonic:</b> lower / higher / equal solute than cell.</li>
+    <li><b>Active vs. Passive transport:</b> with ATP vs. down a gradient for free.</li>
+  </ul>
+</div>
+
+<div class="page-banner bg-repro">1 • Animal Asexual Reproduction</div>
+<div class="tinted t-bg1">
+  <b>Core idea:</b> one parent → genetically identical offspring by <b>mitosis</b>. Fast, cheap, and reliable
+  in stable environments — but zero genetic variation, so a single pathogen or climate shift can wipe out
+  the whole population. Most often seen in simple animals and in good conditions where rapid population
+  growth is favored.
+</div>
+<div class="cols">
+  <div>
+    <h3 class="sh">A. Fission (Binary Fission)</h3>
+    <ul>
+      <li>Parent splits into two <b>roughly equal</b> parts; each regenerates missing structures.</li>
+      <li><b>Examples:</b> planaria flatworms, sea anemones, protists, many bacteria.</li>
+    </ul>
+    <h3 class="sh">B. Budding</h3>
+    <ul>
+      <li>A <b>small outgrowth</b> grows into a new individual; bud is smaller than parent.</li>
+      <li>May detach, or stay attached to form a <b>colony</b> (Hydra, corals, sponges).</li>
+    </ul>
+    <h3 class="sh">C. Fragmentation</h3>
+    <ul>
+      <li>A piece of the parent breaks off and regenerates into a whole organism.</li>
+      <li><b>Examples:</b> sea stars, sponges, ribbon worms. Small fragments may form <b>cysts</b>.</li>
+    </ul>
+  </div>
+  <div>
+    <h3 class="sh">D. Parthenogenesis</h3>
+    <ul>
+      <li>Unfertilized egg develops into a new individual with no sperm.</li>
+      <li><b>Obligate:</b> whiptail lizards (all-female species).</li>
+      <li><b>Facultative:</b> Komodo dragons, some sharks when isolated.</li>
+      <li><b>Social insects:</b> bees — unfertilized → haploid male drones; fertilized → diploid females.</li>
+    </ul>
+    <h3 class="sh">Why asexual works</h3>
+    <ul>
+      <li>No need to find a mate; all offspring can reproduce.</li>
+      <li>Best when conditions are <b>stable</b> and resources are plentiful.</li>
+      <li>Many species switch: asexual in good times, sexual under stress.</li>
+    </ul>
+  </div>
+</div>
+
+<table class="th-repro">
+  <tr><th></th><th>Asexual</th><th>Sexual</th></tr>
+  <tr><td>Parents</td><td>One</td><td>Two (usually)</td></tr>
+  <tr><td>Variation</td><td>None (clones)</td><td>High (meiosis + recombination + fertilization)</td></tr>
+  <tr><td>Speed / Energy</td><td>Fast &amp; cheap</td><td>Slower, expensive (mates, gametes, care)</td></tr>
+  <tr><td>Adaptability</td><td>Low — vulnerable to change</td><td>High — can evolve with environment</td></tr>
+  <tr><td>Cell division</td><td>Mitosis</td><td>Meiosis → fertilization</td></tr>
+  <tr><td>Best conditions</td><td>Stable, resource-rich</td><td>Changing, disease-prone</td></tr>
+</table>
+
+<div class="page-banner bg-repro">2 • Sexual Reproduction &amp; Plant Reproduction</div>
+
+<div class="section-banner bg-repro">Sex Determination &amp; Hermaphroditism</div>
+<div class="cols">
+  <ul>
+    <li><b>Gonochoristic:</b> sex <b>fixed at birth</b> — most vertebrates, separate males and females.</li>
+    <li><b>Simultaneous hermaphrodites:</b> both organs at once (earthworms, banana slugs); usually <b>cross-fertilize</b>.</li>
+    <li><b>Sequential hermaphrodites:</b> switch sex during life based on age or social cues.
+      <ul>
+        <li><b>Protandrous:</b> male → female (clownfish).</li>
+        <li><b>Protogynous:</b> female → male (blue-headed wrasse).</li>
+      </ul>
+    </li>
+    <li><b>Self-fertilization:</b> rare — some tapeworms; reduces variation.</li>
+  </ul>
+  <div>
+    <h3 class="sh">Embryonic Sex Determination</h3>
+    <ul>
+      <li><b>Genetic (GSD):</b> chromosomes decide — XX/XY humans, ZW birds, XO insects.</li>
+      <li><b>Temperature (TSD):</b> incubation temperature sets sex — turtles, crocodilians.</li>
+      <li><b>Environmental:</b> density, pH, hormones, social cues.</li>
+    </ul>
+    <h3 class="sh">r vs. K Selection Strategies</h3>
+    <ul>
+      <li><b>r-selected:</b> many small offspring, little care, high mortality (fish, insects, frogs).</li>
+      <li><b>K-selected:</b> few large offspring, heavy care (mammals, birds, elephants).</li>
+      <li>Most species sit on a spectrum between these extremes.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="section-banner bg-repro">Fertilization &amp; Developmental Modes</div>
+<div class="cols">
+  <div>
+    <ul>
+      <li><b>External fertilization:</b> in water — fish, amphibians, coral. Requires synchrony (<b>spawning</b>); huge gamete numbers offset loss.</li>
+      <li><b>Internal fertilization:</b> sperm delivered inside female — higher success, fewer offspring; needs courtship and copulatory organs (penis, claspers) or <b>spermatophores</b> (salamanders).</li>
+    </ul>
+    <h3 class="sh">Developmental Modes</h3>
+    <ul>
+      <li><b>Oviparous:</b> eggs laid externally (birds, most reptiles, insects).</li>
+      <li><b>Ovoviviparous:</b> eggs retained inside mother, fed by <b>yolk only</b> (some sharks, guppies).</li>
+      <li><b>Viviparous:</b> embryo fed internally by <b>placenta</b> (most mammals).</li>
+    </ul>
+  </div>
+  <div>
+    <h3 class="sh">Mammal Groups</h3>
+    <ul>
+      <li><b>Monotremes:</b> egg-laying mammals — platypus, echidna.</li>
+      <li><b>Marsupials:</b> short gestation + long <b>pouch</b> development (kangaroo, opossum).</li>
+      <li><b>Placental (eutherian):</b> longest gestation; highest parental investment.</li>
+    </ul>
+    <h3 class="sh">Reproductive Cycles</h3>
+    <ul>
+      <li><b>Estrous cycle:</b> unused uterine lining reabsorbed; most mammals.</li>
+      <li><b>Menstrual cycle:</b> uterine lining shed externally; primates.</li>
+      <li><b>Delayed implantation:</b> fertilized egg pauses until conditions right (bears, some bats).</li>
+      <li><b>Diapause:</b> embryonic development pauses during stress.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="section-banner bg-repro">Plant Reproduction — Flowers, Double Fertilization, Seeds</div>
+<table class="th-repro">
+  <tr><th>Whorl</th><th>Role</th><th>Key parts</th></tr>
+  <tr><td>1. Sepals</td><td>Protect bud</td><td>Green, leaf-like — collectively the <b>calyx</b></td></tr>
+  <tr><td>2. Petals</td><td>Attract pollinators</td><td>Colored, scented — collectively the <b>corolla</b></td></tr>
+  <tr><td>3. Stamens (male)</td><td>Produce pollen</td><td><b>Anther</b> (makes pollen) + filament (stalk)</td></tr>
+  <tr><td>4. Carpel/Pistil (female)</td><td>Produce ovules</td><td><b>Stigma</b> (sticky), style (tube), <b>ovary</b> (holds ovules)</td></tr>
+</table>
+<div class="cols">
+  <div>
+    <ul>
+      <li><b>Monoecious vs. Dioecious:</b> both sexes on same plant / on separate plants.</li>
+      <li><b>Pollen grain:</b> male gametophyte — 2 sperm + 1 tube cell.</li>
+      <li><b>Embryo sac:</b> female gametophyte — 7 cells, 8 nuclei.</li>
+      <li><b>Pollination:</b> transfer of pollen anther → stigma (wind, water, insects, birds, bats).</li>
+    </ul>
+    <h3 class="sh">Double Fertilization (angiosperm hallmark)</h3>
+    <ul>
+      <li>Sperm 1 + Egg → <b>Zygote (2n)</b> → embryo.</li>
+      <li>Sperm 2 + 2 polar nuclei → <b>Endosperm (3n)</b> food tissue.</li>
+      <li>Ensures food tissue made only when fertilization succeeds.</li>
+    </ul>
+  </div>
+  <div>
+    <ul>
+      <li><b>Seed:</b> dormant embryo + food + protective coat.</li>
+      <li><b>Fruit:</b> mature ovary — aids seed dispersal (wind, water, animals).</li>
+      <li><b>Pericarp layers:</b> exocarp (skin), mesocarp (flesh), endocarp (pit).</li>
+    </ul>
+    <h3 class="sh">Plant Asexual / Vegetative Reproduction</h3>
+    <ul>
+      <li><b>Apomixis:</b> clonal seed from mitosis — no fertilization.</li>
+      <li><b>Runners (stolons):</b> strawberry — horizontal stems root at nodes.</li>
+      <li><b>Rhizomes / tubers:</b> ginger / potato — underground stems.</li>
+      <li><b>Suckers / plantlets:</b> raspberry / Mother of Thousands.</li>
+      <li><b>Grafting &amp; cuttings:</b> human-assisted clonal propagation.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="page-banner bg-trans">3 • Animal Transport &amp; Human Circulation</div>
+<div class="tinted t-bg2">
+  Large bodies can't rely on diffusion — a <b>circulatory system</b> bulk-moves fluid so every cell is
+  close to an exchange surface. The heart is the pump, vessels are the plumbing, and blood carries
+  O<sub>2</sub>, CO<sub>2</sub>, nutrients, waste, hormones, and heat.
+</div>
+
+<div class="section-banner bg-trans">Circulatory System Types &amp; Vertebrate Hearts</div>
+<div class="cols">
+  <div>
+    <ul>
+      <li><b>Open circulation:</b> <b>hemolymph</b> bathes organs directly; low pressure. Most arthropods and mollusks (except cephalopods).</li>
+      <li><b>Closed circulation:</b> blood stays in vessels; heart pumps under pressure. Vertebrates, annelids, octopus/squid.</li>
+      <li>Closed systems support higher metabolism, finer control, and more oxygen delivery.</li>
+    </ul>
+    <h3 class="sh">Vertebrate Heart Evolution</h3>
+    <ul>
+      <li><b>Fish:</b> 2 chambers — single circulation; blood loses pressure at gills.</li>
+      <li><b>Amphibians:</b> 3 chambers (2 atria, 1 ventricle); some mixing.</li>
+    </ul>
+  </div>
+  <div>
+    <ul>
+      <li><b>Most reptiles:</b> 3 chambers with <b>partial septum</b>; can shunt blood (diving turtles).</li>
+      <li><b>Crocodilians:</b> 4 chambers but with a mixing vessel.</li>
+      <li><b>Birds &amp; Mammals:</b> <b>4 chambers</b>, <b>full separation</b> — supports endothermy and high activity.</li>
+    </ul>
+    <h3 class="sh">Single vs. Double Circulation</h3>
+    <ul>
+      <li><b>Single:</b> blood through heart once per lap (fish).</li>
+      <li><b>Double:</b> pulmonary (to lungs) + systemic (to body) — much higher pressure.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="section-banner bg-trans">Human Heart — Cardiac Cycle &amp; Conduction</div>
+<div class="cols">
+  <div>
+    <h3 class="sh">Cardiac Cycle Phases</h3>
+    <ul>
+      <li><b>Systole:</b> contraction — blood ejected from chambers.</li>
+      <li><b>Diastole:</b> relaxation — chambers fill.</li>
+      <li><b>AV valves (tricuspid, mitral):</b> close during systole = "lub."</li>
+      <li><b>Semilunar valves (aortic, pulmonary):</b> close at end of systole = "dub."</li>
+    </ul>
+    <h3 class="sh">Electrical Conduction</h3>
+    <ul>
+      <li><b>SA node</b> (pacemaker, right atrium) fires → atria contract.</li>
+      <li><b>AV node</b> delays signal ~0.1 s to let atria empty.</li>
+      <li>Signal races down <b>Bundle of His</b> → <b>Purkinje fibers</b> → ventricles contract bottom up.</li>
+    </ul>
+  </div>
+  <div>
+    <ul>
+      <li><b>Stroke volume (SV):</b> volume per beat — ~70 mL.</li>
+      <li><b>Heart rate (HR):</b> beats per minute — ~70 at rest.</li>
+      <li><b>Cardiac output (CO):</b> HR × SV ≈ <b>5 L/min</b> — all your blood every minute.</li>
+      <li><b>ECG/EKG:</b> P = atrial depolarization, QRS = ventricular depolarization, T = ventricular repolarization.</li>
+      <li><b>Blood pressure:</b> systolic/diastolic (e.g. 120/80 mmHg). Hypertension ≥ 140/90.</li>
+      <li><b>Baroreceptors:</b> pressure sensors in aorta/carotid → autonomic + hormonal adjust.</li>
+      <li><b>Lymphatic system:</b> returns leaked plasma (~3 L/day); failure → <b>edema</b>.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="section-banner bg-trans">Blood Vessels, Blood Cells &amp; Gas Carriage</div>
+<div class="cols">
+  <div>
+    <h3 class="sh">Vessels</h3>
+    <ul>
+      <li><b>Arteries:</b> thick muscular walls; carry blood <b>away</b> from heart under high pressure.</li>
+      <li><b>Arterioles:</b> regulate flow into capillaries (vasoconstriction/dilation).</li>
+      <li><b>Capillaries:</b> <b>one cell thick</b> — the actual exchange site.</li>
+      <li><b>Venules / Veins:</b> thinner walls, lower pressure, <b>valves</b> prevent backflow.</li>
+    </ul>
+    <h3 class="sh">Blood Composition</h3>
+    <ul>
+      <li><b>Plasma (~55%):</b> water, proteins, ions, nutrients, wastes, hormones.</li>
+      <li><b>Red blood cells:</b> carry O<sub>2</sub> via <b>hemoglobin</b>; no nucleus in mammals.</li>
+      <li><b>White blood cells:</b> immune defense.</li>
+      <li><b>Platelets:</b> cell fragments that clot bleeding.</li>
+    </ul>
+  </div>
+  <div>
+    <ul>
+      <li><b>O<sub>2</sub> transport:</b> ~98% bound to <b>hemoglobin</b>; ~2% dissolved. Each Hb carries up to 4 O<sub>2</sub>.</li>
+      <li><b>CO<sub>2</sub> transport:</b> ~70% as <b>bicarbonate (HCO<sub>3</sub><sup>-</sup>)</b>; ~23% on Hb; ~7% dissolved.</li>
+      <li><b>Bohr effect:</b> low pH / high CO<sub>2</sub> / high temp → Hb <b>releases</b> O<sub>2</sub> where tissues need it.</li>
+      <li><b>Myoglobin:</b> single-unit O<sub>2</sub> reserve in muscle; critical in diving mammals.</li>
+      <li><b>Respiratory pigments:</b> Hemoglobin (Fe, red) — vertebrates; Hemocyanin (Cu, blue) — mollusks/arthropods; Hemerythrin (Fe, violet) — some worms.</li>
+      <li><b>Clotting cascade:</b> platelets + fibrinogen → fibrin mesh → scab.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="page-banner bg-trans">4 • Plant Transport &amp; Stress Responses</div>
+<div class="tinted t-bg2">
+  <b>Xylem</b> moves water and dissolved minerals <b>up</b> from soil to leaves; <b>phloem</b> moves sugars
+  from <b>source</b> to <b>sink</b>. Most plant transport is passive — powered by evaporation (transpiration)
+  and osmotic gradients generated by active sugar loading. Plants have no pump; they rely on the physics of water.
+</div>
+
+<div class="section-banner bg-trans">Vascular Tissues — Xylem vs. Phloem</div>
+<table class="th-trans">
+  <tr><th></th><th>Xylem</th><th>Phloem</th></tr>
+  <tr><td>Transports</td><td>Water + dissolved minerals</td><td>Sugars (sucrose), amino acids, hormones</td></tr>
+  <tr><td>Direction</td><td>One-way: <b>up</b></td><td>Bidirectional: source → sink</td></tr>
+  <tr><td>Cell state</td><td><b>Dead</b> at maturity (hollow tubes)</td><td><b>Living</b> cells</td></tr>
+  <tr><td>Conducting cells</td><td>Tracheids + Vessel elements (angiosperms)</td><td>Sieve-tube elements (no nucleus)</td></tr>
+  <tr><td>Support cells</td><td>—</td><td>Companion cells (ATP-powered loading)</td></tr>
+  <tr><td>Driver</td><td>Transpiration pull (passive)</td><td>Pressure-flow (active loading)</td></tr>
+  <tr><td>Walls</td><td>Lignified — also provides structural support</td><td>Thin walls; sieve plates with pores</td></tr>
+</table>
+
+<div class="section-banner bg-trans">Mechanisms of Movement</div>
+<div class="cols">
+  <div>
+    <h3 class="sh">Transpiration–Cohesion–Tension (xylem)</h3>
+    <ul>
+      <li>Evaporation at <b>stomata</b> creates negative pressure (tension).</li>
+      <li><b>Cohesion:</b> water-to-water H-bonds keep the column intact.</li>
+      <li><b>Adhesion:</b> water sticks to xylem walls — helps hold column up.</li>
+      <li>Water column is <b>pulled</b> up like a straw — root hair to leaf.</li>
+      <li>Explains how redwoods (100+ m) lift water against gravity.</li>
+    </ul>
+    <h3 class="sh">Water Potential (ψ)</h3>
+    <ul>
+      <li>Water moves high ψ → low ψ.</li>
+      <li><b>Turgid:</b> swollen, healthy posture.</li>
+      <li><b>Flaccid:</b> wilting.</li>
+      <li><b>Plasmolysis:</b> membrane pulls from wall in hypertonic solution.</li>
+    </ul>
+  </div>
+  <div>
+    <h3 class="sh">Pressure-Flow Hypothesis (phloem)</h3>
+    <ul>
+      <li>At <b>source</b> (mature leaf), sugar is <b>actively loaded</b> into sieve tubes.</li>
+      <li>Water follows by osmosis → high pressure at source.</li>
+      <li>At <b>sink</b> (root, fruit), sugar unloaded; water leaves → low pressure.</li>
+      <li>Sap flows high → low pressure, carrying sugars.</li>
+      <li>Source/sink roles can <b>switch seasonally</b>.</li>
+    </ul>
+    <h3 class="sh">Root Uptake</h3>
+    <ul>
+      <li><b>Root hairs:</b> increase surface area.</li>
+      <li><b>Endodermis:</b> innermost root cortex layer — the "bouncer."</li>
+      <li><b>Casparian strip:</b> waxy <b>suberin</b> band forcing water through membranes for selective mineral uptake.</li>
+      <li><b>Mycorrhizae:</b> fungal root partners boost water/phosphorus uptake.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="section-banner bg-trans">Plant Stress Responses</div>
+<div class="cols">
+  <div>
+    <h3 class="sh">Drought / Heat</h3>
+    <ul>
+      <li><b>Cavitation:</b> air bubble breaks xylem column — disastrous.</li>
+      <li><b>Stomatal pits &amp; trichomes:</b> trap humid air, block drying wind.</li>
+      <li><b>Thick cuticle:</b> waxy waterproof leaf coating.</li>
+      <li><b>CAM photosynthesis:</b> stomata open at <b>night</b> — cacti, succulents, pineapple.</li>
+      <li><b>C<sub>4</sub> photosynthesis:</b> efficient in hot/bright — corn, sugarcane.</li>
+      <li><b>Leaf drop (deciduous):</b> shed leaves in drought/cold.</li>
+    </ul>
+  </div>
+  <div>
+    <h3 class="sh">Flooding / Low Oxygen</h3>
+    <ul>
+      <li><b>Lenticels:</b> spongy pores in bark allow gas exchange when wet.</li>
+      <li><b>Aerenchyma:</b> air-filled tissue piping O<sub>2</sub> to submerged roots (rice, water lilies).</li>
+      <li><b>Pneumatophores:</b> "knee" roots above water (mangroves, cypress).</li>
+      <li><b>Adventitious roots:</b> sprout from stems under stress.</li>
+    </ul>
+    <h3 class="sh">Cold &amp; Salt</h3>
+    <ul>
+      <li><b>Antifreeze solutes:</b> prevent ice damage.</li>
+      <li><b>Salt glands:</b> mangroves secrete excess salt from leaves.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="page-banner bg-gas">5 • Gas Exchange Fundamentals &amp; Animal Systems</div>
+<div class="tinted t-bg3">
+  <b>Rate = (A × ΔP) / D.</b> Every exchange structure — gills, lungs, tracheae, alveoli, skin — maximizes
+  <b>surface area</b>, maintains the <b>gradient</b> by ventilating and circulating, and keeps <b>distance</b>
+  tiny by being one cell thick and always <b>moist</b> (gases must dissolve to diffuse).
+</div>
+
+<div class="section-banner bg-gas">Key Vocabulary &amp; Ventilation Methods</div>
+<div class="cols">
+  <ul>
+    <li><b>Gas exchange:</b> passive diffusion of O<sub>2</sub> in and CO<sub>2</sub> out across a moist surface.</li>
+    <li><b>Respiration — 3 meanings:</b> <b>External</b> (breathing), <b>internal</b> (capillary-to-cell), <b>cellular</b> (ATP production).</li>
+    <li><b>Aqueous requirement:</b> surfaces must stay moist.</li>
+    <li><b>Partial pressure:</b> pressure of one gas in a mixture — drives diffusion.</li>
+    <li><b>Counter- vs. co-current:</b> flow direction determines efficiency.</li>
+  </ul>
+  <div>
+    <h3 class="sh">Ventilation Methods</h3>
+    <ul>
+      <li><b>Buccal pumping:</b> mouth/throat gulp (fish, amphibians).</li>
+      <li><b>Ram ventilation:</b> swim fast with mouth open (tuna, sharks).</li>
+      <li><b>Costal ventilation:</b> ribs expand chest — negative pressure pulls air (reptiles, mammals).</li>
+      <li><b>Tidal ventilation:</b> air in/out <b>same path</b> — mammals; residual volume limits efficiency.</li>
+      <li><b>Countercurrent (fish gills):</b> blood opposite to water → ~80–90% O<sub>2</sub> extraction.</li>
+      <li><b>Cross-current (birds):</b> one-way airflow through parabronchi; best at altitude.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="section-banner bg-gas">Exchange Structures Across the Animal Kingdom</div>
+<table class="th-gas">
+  <tr><th>Group</th><th>Structure</th><th>Key features</th></tr>
+  <tr><td>Protists / small invertebrates</td><td>Cell surface</td><td>Direct diffusion — only works at small sizes.</td></tr>
+  <tr><td>Flatworms, sponges</td><td>Body wall</td><td>Flat/thin body keeps every cell near the surface.</td></tr>
+  <tr><td>Fish</td><td>Gills</td><td><b>Lamellae</b>, <b>operculum</b> cover, <b>countercurrent</b> flow.</td></tr>
+  <tr><td>Amphibians</td><td>Lungs + skin</td><td>Simple sac lungs + moist vascular skin = <b>cutaneous respiration</b>.</td></tr>
+  <tr><td>Insects</td><td>Tracheal system</td><td><b>Spiracles</b> → tracheae → tracheoles direct to cells — bypasses blood.</td></tr>
+  <tr><td>Reptiles</td><td>Lungs (sac-like)</td><td>More folded than amphibian lungs; rib-driven.</td></tr>
+  <tr><td>Birds</td><td>Lungs + air sacs</td><td><b>Parabronchi</b> — one-way, cross-current; efficient at altitude.</td></tr>
+  <tr><td>Mammals</td><td>Lungs</td><td>Bronchi → bronchioles → <b>alveoli</b>; diaphragm-driven tidal ventilation.</td></tr>
+</table>
+
+<div class="section-banner bg-gas">Human Breathing Control</div>
+<div class="cols">
+  <div>
+    <h3 class="sh">What controls breathing?</h3>
+    <ul>
+      <li>Rate is set mainly by <b>CO<sub>2</sub> / pH</b>, NOT O<sub>2</sub>.</li>
+      <li>Holding your breath fails because rising CO<sub>2</sub> → falling pH triggers urge to breathe.</li>
+      <li><b>Chemoreceptors</b> in medulla, aorta, carotid sense blood CO<sub>2</sub>/pH.</li>
+      <li><b>Medulla oblongata</b> signals diaphragm + intercostals.</li>
+    </ul>
+  </div>
+  <div>
+    <h3 class="sh">Breathing Mechanics</h3>
+    <ul>
+      <li><b>Inhale:</b> diaphragm contracts, ribs lift → chest volume ↑ → pressure ↓ → air in.</li>
+      <li><b>Exhale:</b> diaphragm relaxes, volume ↓ → pressure ↑ → air out (passive at rest).</li>
+      <li><b>Bohr effect</b> makes O<sub>2</sub> unload automatically at hard-working muscles.</li>
+      <li>Residual volume: lungs never fully empty.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="page-banner bg-gas">6 • Plant Gas Exchange, Leaves &amp; Unit Summary</div>
+<div class="tinted t-bg3">
+  Plants need CO<sub>2</sub> in for <b>photosynthesis</b> (day), plus O<sub>2</sub> in for <b>cellular respiration</b>
+  (always, but net uptake at night), and O<sub>2</sub> out during the day. All exchange is <b>passive diffusion</b>
+  through specialized pores — <b>stomata</b> in leaves, <b>lenticels</b> in woody bark.
+</div>
+
+<div class="section-banner bg-gas">Stomata, Guard Cells &amp; Leaf Tissues</div>
+<div class="cols">
+  <div>
+    <ul>
+      <li><b>Stomata:</b> pores (usually leaf underside); sole path for CO<sub>2</sub> in.</li>
+      <li><b>Guard cells:</b> kidney-shaped pair flanking each stoma; open/close by <b>turgor</b> driven by K<sup>+</sup> and water.
+        <ul>
+          <li>Moist: turgid → <b>open</b>.</li>
+          <li>Heat/drought: flaccid → <b>closed</b>.</li>
+        </ul>
+      </li>
+      <li><b>Cuticle:</b> waxy waterproof layer — forces exchange through stomata.</li>
+      <li><b>Lenticels:</b> raised pores in bark of woody plants.</li>
+      <li><b>Epidermis:</b> protective single cell layer top and bottom; transparent.</li>
+    </ul>
+  </div>
+  <div>
+    <h3 class="sh">Mesophyll (middle of leaf)</h3>
+    <ul>
+      <li><b>Palisade mesophyll:</b> tightly packed upper layer — main <b>photosynthesis</b> site.</li>
+      <li><b>Spongy mesophyll:</b> loose lower layer — air-filled; gases diffuse to every cell.</li>
+    </ul>
+    <h3 class="sh">CAM Photosynthesis (water savers)</h3>
+    <ul>
+      <li>Stomata open at <b>night</b> — CO<sub>2</sub> stored as <b>malic acid</b> in vacuoles.</li>
+      <li>Closed by day — saves water; stored CO<sub>2</sub> fuels photosynthesis.</li>
+      <li>Examples: cacti, pineapples, succulents, agave.</li>
+    </ul>
+    <h3 class="sh">C<sub>4</sub> Photosynthesis</h3>
+    <ul>
+      <li>Spatial split: CO<sub>2</sub> fixed in mesophyll, Calvin cycle in bundle sheath.</li>
+      <li>Efficient in hot/bright conditions — corn, sugarcane.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="section-banner bg-gas">Leaf Morphology &amp; Modifications</div>
+<table class="th-gas">
+  <tr><th>Part / Type</th><th>Description / Example</th></tr>
+  <tr><td>Blade (lamina)</td><td>Wide flat photosynthetic surface — catches light.</td></tr>
+  <tr><td>Petiole</td><td>Stalk joining blade to stem.</td></tr>
+  <tr><td>Stipules</td><td>Small leaf-like outgrowths at base of petiole.</td></tr>
+  <tr><td>Simple leaf</td><td>One undivided blade (maple, oak).</td></tr>
+  <tr><td>Compound leaf</td><td>Blade split into leaflets (palmate: horse chestnut; pinnate: ash, rose).</td></tr>
+  <tr><td>Bracts</td><td>Petal-like modified leaves (poinsettia red "flowers", dogwood).</td></tr>
+  <tr><td>Spines</td><td>Defense modification (cactus spines are modified leaves).</td></tr>
+  <tr><td>Tendrils</td><td>Thin climbing structures (peas, grapes).</td></tr>
+  <tr><td>Storage leaves</td><td>Fleshy water/nutrient stores (onion scales, succulents).</td></tr>
+  <tr><td>Insectivorous leaves</td><td>Trap &amp; digest insects in poor soil — Venus flytrap, sundew, pitcher plant.</td></tr>
+</table>
+
+<div class="section-banner bg-dark">Unit Summary — Patterns to Remember</div>
+<div class="tinted t-neut">
+  <ul>
+    <li><b>Exchange obeys Fick's Law:</b> maximize A, maintain ΔP, minimize D — gills, lungs, alveoli, capillaries, stomata, leaves.</li>
+    <li><b>Water is universal:</b> gas exchange needs moist surfaces; plant transport runs on water columns; fertilization often happens in water.</li>
+    <li><b>Cost drives strategy:</b> asexual is cheap but inflexible; sexual is expensive but adaptive. Open circulation is cheap; closed is powerful. Diffusion is free; active transport costs ATP.</li>
+    <li><b>Variation wins long-term:</b> meiosis, double fertilization, seed dispersal — all deliver variation.</li>
+    <li><b>Structure fits function:</b> alveoli tiny/many; lamellae stacked; capillaries one cell thick; leaves flat; xylem cells dead hollow tubes — geometry always serves the job.</li>
+  </ul>
+</div>
+
+<div class="footer-note">Biol 123 Master Cheatsheet — Chapter 9, Week 10, Week 11</div>
+
+</div>
+</body>
+</html>
