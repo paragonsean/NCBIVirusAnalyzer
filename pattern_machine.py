@@ -19,6 +19,7 @@ from __future__ import annotations
 import argparse
 import collections
 import json
+import math
 import re
 from dataclasses import dataclass
 from pathlib import Path
@@ -28,9 +29,10 @@ from typing import Dict, Iterable, List, Tuple
 DNA_RE = re.compile(r"[^ACGT]")
 
 
-def parse_fasta_sequences(path: Path) -> Iterable[str]:
+def parse_fasta_sequences(path: Path, max_seqs: int | None = None) -> Iterable[str]:
     """Yield uppercased sequence strings from a FASTA file."""
     seq_parts: List[str] = []
+    seen = 0
     with path.open("r", encoding="utf-8", errors="ignore") as f:
         for raw in f:
             line = raw.strip()
@@ -39,6 +41,9 @@ def parse_fasta_sequences(path: Path) -> Iterable[str]:
             if line.startswith(">"):
                 if seq_parts:
                     yield "".join(seq_parts).upper()
+                    seen += 1
+                    if max_seqs is not None and seen >= max_seqs:
+                        return
                     seq_parts.clear()
             else:
                 seq_parts.append(line)
@@ -54,7 +59,7 @@ def clean_dna(seq: str) -> str:
 class Candidate:
     pattern: str
     count: int
-    score: int
+    score: float
 
 
 def count_kmers(
@@ -62,12 +67,13 @@ def count_kmers(
     min_len: int,
     max_len: int,
     min_count: int,
+    max_seqs: int | None = None,
 ) -> Dict[str, int]:
     """Count k-mers for k in [min_len, max_len] across FASTA."""
     counters: Dict[int, collections.Counter] = {
         k: collections.Counter() for k in range(min_len, max_len + 1)
     }
-    for seq in parse_fasta_sequences(fasta_path):
+    for seq in parse_fasta_sequences(fasta_path, max_seqs=max_seqs):
         s = clean_dna(seq)
         if not s:
             continue
@@ -123,7 +129,11 @@ def build_trie(token_to_pattern: Dict[str, str]) -> Dict:
     return trie
 
 
-def estimate_encoded_units(fasta_path: Path, token_to_pattern: Dict[str, str]) -> int:
+def estimate_encoded_units(
+    fasta_path: Path,
+    token_to_pattern: Dict[str, str],
+    max_seqs: int | None = None,
+) -> int:
     """
     Unit cost estimator:
       - each base char costs 1 unit
@@ -131,7 +141,7 @@ def estimate_encoded_units(fasta_path: Path, token_to_pattern: Dict[str, str]) -
     """
     trie = build_trie(token_to_pattern)
     total = 0
-    for seq in parse_fasta_sequences(fasta_path):
+    for seq in parse_fasta_sequences(fasta_path, max_seqs=max_seqs):
         s = clean_dna(seq)
         if not s:
             continue
@@ -144,6 +154,7 @@ def select_dictionary(
     raw_counts: Dict[str, int],
     max_terms: int,
     candidate_pool: int,
+    max_seqs: int | None = None,
 ) -> List[Candidate]:
     """
     Pick motifs that reduce encoded size under longest-match tokenization.
@@ -151,17 +162,22 @@ def select_dictionary(
     """
     candidates: List[Candidate] = []
     for pat, ct in raw_counts.items():
-        # Savings proxy before overlap effects:
-        # each occurrence replaces len(pat) units with 1 token unit.
-        gain = (len(pat) - 1) * ct
-        if gain > 0:
-            candidates.append(Candidate(pattern=pat, count=ct, score=gain))
+        # Polar Magnitude score:
+        #   x-axis = motif length, y-axis = observed frequency.
+        # Larger radius means stronger structural repeat candidate.
+        length_val = len(pat)
+        freq_val = ct
+        magnitude = math.hypot(length_val, freq_val)
+
+        # Keep only motifs with positive substitution gain.
+        if (length_val - 1) * ct > 0:
+            candidates.append(Candidate(pattern=pat, count=ct, score=magnitude))
     candidates.sort(key=lambda x: (x.score, len(x.pattern), x.count), reverse=True)
     candidates = candidates[:candidate_pool]
 
     chosen: List[Candidate] = []
     token_to_pattern: Dict[str, str] = {}
-    baseline = estimate_encoded_units(fasta_path, token_to_pattern)
+    baseline = estimate_encoded_units(fasta_path, token_to_pattern, max_seqs=max_seqs)
 
     for cand in candidates:
         if len(chosen) >= max_terms:
@@ -169,12 +185,44 @@ def select_dictionary(
         token = f"X_{len(chosen) + 1:04d}"
         trial = dict(token_to_pattern)
         trial[token] = cand.pattern
-        new_units = estimate_encoded_units(fasta_path, trial)
+        new_units = estimate_encoded_units(fasta_path, trial, max_seqs=max_seqs)
         if new_units < baseline:
             token_to_pattern = trial
             chosen.append(cand)
             baseline = new_units
 
+    return chosen
+
+
+def select_dictionary_fast(
+    raw_counts: Dict[str, int],
+    max_terms: int,
+    candidate_pool: int,
+) -> List[Candidate]:
+    """
+    Fast selector for very large FASTA files.
+    Prioritizes (score, length, count) and avoids near-duplicate motifs by
+    rejecting any candidate that is a substring of an already selected motif.
+    """
+    candidates: List[Candidate] = []
+    for pat, ct in raw_counts.items():
+        gain = (len(pat) - 1) * ct
+        if gain > 0:
+            candidates.append(Candidate(pattern=pat, count=ct, score=gain))
+    candidates.sort(key=lambda x: (x.score, len(x.pattern), x.count), reverse=True)
+    candidates = candidates[:candidate_pool]
+
+    chosen: List[Candidate] = []
+    for cand in candidates:
+        if len(chosen) >= max_terms:
+            break
+        skip = False
+        for sel in chosen:
+            if cand.pattern in sel.pattern:
+                skip = True
+                break
+        if not skip:
+            chosen.append(cand)
     return chosen
 
 
@@ -186,9 +234,14 @@ def mine_dictionary(
     min_count: int,
     max_terms: int,
     candidate_pool: int,
+    max_seqs: int | None = None,
+    selection: str = "fast",
 ) -> Dict:
-    raw_counts = count_kmers(fasta_path, min_len, max_len, min_count)
-    chosen = select_dictionary(fasta_path, raw_counts, max_terms, candidate_pool)
+    raw_counts = count_kmers(fasta_path, min_len, max_len, min_count, max_seqs=max_seqs)
+    if selection == "exact":
+        chosen = select_dictionary(fasta_path, raw_counts, max_terms, candidate_pool, max_seqs=max_seqs)
+    else:
+        chosen = select_dictionary_fast(raw_counts, max_terms, candidate_pool)
 
     dictionary = []
     for idx, c in enumerate(chosen, start=1):
@@ -211,6 +264,8 @@ def mine_dictionary(
             "min_count": min_count,
             "max_terms": max_terms,
             "candidate_pool": candidate_pool,
+            "max_seqs": max_seqs,
+            "selection": selection,
         },
         "dictionary": dictionary,
     }
@@ -218,7 +273,12 @@ def mine_dictionary(
     return out
 
 
-def apply_dictionary(fasta_path: Path, dict_path: Path, out_path: Path) -> Dict[str, int]:
+def apply_dictionary(
+    fasta_path: Path,
+    dict_path: Path,
+    out_path: Path,
+    max_seqs: int | None = None,
+) -> Dict[str, int]:
     data = json.loads(dict_path.read_text(encoding="utf-8"))
     token_to_pattern = {d["token"]: d["pattern"] for d in data["dictionary"]}
     trie = build_trie(token_to_pattern)
@@ -228,7 +288,7 @@ def apply_dictionary(fasta_path: Path, dict_path: Path, out_path: Path) -> Dict[
     token_counts = collections.Counter()
 
     with out_path.open("w", encoding="utf-8") as out:
-        for idx, seq in enumerate(parse_fasta_sequences(fasta_path), start=1):
+        for idx, seq in enumerate(parse_fasta_sequences(fasta_path, max_seqs=max_seqs), start=1):
             s = clean_dna(seq)
             if not s:
                 continue
@@ -269,11 +329,14 @@ def main() -> None:
     p_mine.add_argument("--max-terms", type=int, default=128)
     p_mine.add_argument("--candidate-pool", type=int, default=400)
     p_mine.add_argument("--show-top", type=int, default=15)
+    p_mine.add_argument("--max-seqs", type=int, default=0, help="If >0, limit sequences scanned.")
+    p_mine.add_argument("--selection", choices=["fast", "exact"], default="fast")
 
     p_apply = sub.add_parser("apply", help="Translate FASTA using existing dictionary.")
     p_apply.add_argument("input", help="Input FASTA file.")
     p_apply.add_argument("--dict", required=True, help="Dictionary JSON from mine step.")
     p_apply.add_argument("--out", default="translated_tokens.txt", help="Output translated text.")
+    p_apply.add_argument("--max-seqs", type=int, default=0, help="If >0, limit sequences translated.")
 
     p_report = sub.add_parser("report", help="Show dictionary contents.")
     p_report.add_argument("--dict", required=True, help="Dictionary JSON.")
@@ -283,7 +346,8 @@ def main() -> None:
 
     if args.cmd == "mine":
         src = Path(args.input)
-        raw_counts = count_kmers(src, args.min_len, args.max_len, args.min_count)
+        max_seqs = args.max_seqs if args.max_seqs > 0 else None
+        raw_counts = count_kmers(src, args.min_len, args.max_len, args.min_count, max_seqs=max_seqs)
         print_top_repeats(raw_counts, top_n=args.show_top)
         result = mine_dictionary(
             fasta_path=src,
@@ -293,6 +357,8 @@ def main() -> None:
             min_count=args.min_count,
             max_terms=args.max_terms,
             candidate_pool=args.candidate_pool,
+            max_seqs=max_seqs,
+            selection=args.selection,
         )
         print(f"\nDictionary saved: {args.dict_out}")
         print(f"Selected terms: {len(result['dictionary'])}")
@@ -301,7 +367,8 @@ def main() -> None:
         return
 
     if args.cmd == "apply":
-        stats = apply_dictionary(Path(args.input), Path(args.dict), Path(args.out))
+        max_seqs = args.max_seqs if args.max_seqs > 0 else None
+        stats = apply_dictionary(Path(args.input), Path(args.dict), Path(args.out), max_seqs=max_seqs)
         ratio = stats["total_bases"] / max(stats["total_units"], 1)
         print(f"Translated output: {args.out}")
         print(
