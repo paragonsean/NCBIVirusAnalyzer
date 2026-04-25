@@ -1,17 +1,13 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """
-PatternMachine: mine and reuse repeating FASTA motifs.
+Build a duplicate-sequence dictionary from a FASTA file.
 
-Goal:
-  - Find long repeated patterns (e.g. AAAGGGG, AAAGGGGG, ...)
-  - Build a deterministic dictionary (X_0001 -> motif)
-  - Translate FASTA sequences using longest-match tokenization
-  - Reuse a saved dictionary later so you do not need to remine each run
+The output JSON groups identical cleaned DNA sequences together and keeps the
+original FASTA identifiers for every occurrence.
 
 Usage:
-  python pattern_machine.py mine sequences.fasta --dict-out motifs.json
-  python pattern_machine.py apply sequences.fasta --dict motifs.json --out translated.txt
-  python pattern_machine.py report --dict motifs.json
+  python pattern_machine.py sequences.fasta --out sequences_duplicates.json
+  python pattern_machine.py sequences.fasta --metadata-csv ml_training_data_full.csv
 """
 
 from __future__ import annotations
@@ -19,375 +15,216 @@ from __future__ import annotations
 import argparse
 import collections
 import json
-import math
 import re
-from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, Iterable, List, Tuple
+from typing import Any
+from typing import Iterable
+
+import pandas as pd
+
+try:
+    from tqdm import tqdm
+except ImportError:  # pragma: no cover
+    tqdm = None
 
 
 DNA_RE = re.compile(r"[^ACGT]")
 
 
-def parse_fasta_sequences(path: Path, max_seqs: int | None = None) -> Iterable[str]:
-    """Yield uppercased sequence strings from a FASTA file."""
-    seq_parts: List[str] = []
-    seen = 0
-    with path.open("r", encoding="utf-8", errors="ignore") as f:
-        for raw in f:
-            line = raw.strip()
-            if not line:
-                continue
-            if line.startswith(">"):
-                if seq_parts:
-                    yield "".join(seq_parts).upper()
-                    seen += 1
-                    if max_seqs is not None and seen >= max_seqs:
-                        return
-                    seq_parts.clear()
-            else:
-                seq_parts.append(line)
-    if seq_parts:
-        yield "".join(seq_parts).upper()
+def extract_fasta_identifier(header_line: str) -> str:
+    """Return the first identifier token after '>'."""
+    header = header_line.strip()
+    if header.startswith(">"):
+        header = header[1:]
+    header = header.strip()
+    if not header:
+        return "unknown_id"
+    return header.split()[0]
 
 
 def clean_dna(seq: str) -> str:
-    return DNA_RE.sub("", seq)
+    return DNA_RE.sub("", seq.upper())
 
 
-@dataclass
-class Candidate:
-    pattern: str
-    count: int
-    score: float
+def clean_value(value: Any) -> Any:
+    if pd.isna(value):
+        return None
+    if hasattr(value, "item"):
+        return value.item()
+    return value
 
 
-def count_kmers(
-    fasta_path: Path,
-    min_len: int,
-    max_len: int,
-    min_count: int,
-    max_seqs: int | None = None,
-) -> Dict[str, int]:
-    """Count k-mers for k in [min_len, max_len] across FASTA."""
-    counters: Dict[int, collections.Counter] = {
-        k: collections.Counter() for k in range(min_len, max_len + 1)
-    }
-    for seq in parse_fasta_sequences(fasta_path, max_seqs=max_seqs):
-        s = clean_dna(seq)
-        if not s:
+def load_metadata_by_accession(csv_path: Path) -> dict[str, dict[str, Any]]:
+    df = pd.read_csv(csv_path, low_memory=False)
+    if "Accession" not in df.columns:
+        raise ValueError("Metadata CSV must contain an Accession column.")
+
+    metadata: dict[str, dict[str, Any]] = {}
+    for row in df.to_dict(orient="records"):
+        accession = row.get("Accession")
+        if pd.isna(accession):
             continue
-        n = len(s)
-        for k in range(min_len, max_len + 1):
-            if n < k:
+        accession_key = str(accession)
+        metadata[accession_key] = {
+            key: clean_value(value)
+            for key, value in row.items()
+            if key != "Accession"
+        }
+    return metadata
+
+
+def enrich_duplicate_data(data: dict, metadata_csv: Path) -> dict[str, int]:
+    metadata_by_accession = load_metadata_by_accession(metadata_csv)
+    sequence_entries = data.get("sequences", [])
+    matched_accessions: set[str] = set()
+    missing_accessions: set[str] = set()
+    enriched_entries = 0
+
+    for entry in sequence_entries:
+        identifiers = entry.get("identifiers", [])
+        entry_metadata: dict[str, dict[str, Any]] = {}
+
+        for accession in identifiers:
+            accession_key = str(accession)
+            metadata = metadata_by_accession.get(accession_key)
+            if metadata is None:
+                missing_accessions.add(accession_key)
                 continue
-            c = counters[k]
-            for i in range(n - k + 1):
-                c[s[i : i + k]] += 1
+            entry_metadata[accession_key] = metadata
+            matched_accessions.add(accession_key)
 
-    merged: Dict[str, int] = {}
-    for k in range(min_len, max_len + 1):
-        for pat, ct in counters[k].items():
-            if ct >= min_count:
-                merged[pat] = ct
-    return merged
+        entry["metadata_by_accession"] = entry_metadata
+        if entry_metadata:
+            enriched_entries += 1
 
-
-def tokenize_longest_match(seq: str, trie: Dict) -> List[str]:
-    """Greedy longest-match tokenizer with fallback single bases."""
-    out: List[str] = []
-    i = 0
-    n = len(seq)
-    while i < n:
-        node = trie
-        j = i
-        last_token = None
-        last_j = i
-        while j < n and seq[j] in node:
-            node = node[seq[j]]
-            j += 1
-            token = node.get("_tok")
-            if token is not None:
-                last_token = token
-                last_j = j
-        if last_token is not None:
-            out.append(last_token)
-            i = last_j
-        else:
-            out.append(seq[i])
-            i += 1
-    return out
-
-
-def build_trie(token_to_pattern: Dict[str, str]) -> Dict:
-    trie: Dict = {}
-    for token, pat in token_to_pattern.items():
-        node = trie
-        for ch in pat:
-            node = node.setdefault(ch, {})
-        node["_tok"] = token
-    return trie
-
-
-def estimate_encoded_units(
-    fasta_path: Path,
-    token_to_pattern: Dict[str, str],
-    max_seqs: int | None = None,
-) -> int:
-    """
-    Unit cost estimator:
-      - each base char costs 1 unit
-      - each token occurrence costs 1 unit
-    """
-    trie = build_trie(token_to_pattern)
-    total = 0
-    for seq in parse_fasta_sequences(fasta_path, max_seqs=max_seqs):
-        s = clean_dna(seq)
-        if not s:
-            continue
-        total += len(tokenize_longest_match(s, trie))
-    return total
-
-
-def select_dictionary(
-    fasta_path: Path,
-    raw_counts: Dict[str, int],
-    max_terms: int,
-    candidate_pool: int,
-    max_seqs: int | None = None,
-) -> List[Candidate]:
-    """
-    Pick motifs that reduce encoded size under longest-match tokenization.
-    Greedy forward selection from high-value candidate pool.
-    """
-    candidates: List[Candidate] = []
-    for pat, ct in raw_counts.items():
-        # Polar Magnitude score:
-        #   x-axis = motif length, y-axis = observed frequency.
-        # Larger radius means stronger structural repeat candidate.
-        length_val = len(pat)
-        freq_val = ct
-        magnitude = math.hypot(length_val, freq_val)
-
-        # Keep only motifs with positive substitution gain.
-        if (length_val - 1) * ct > 0:
-            candidates.append(Candidate(pattern=pat, count=ct, score=magnitude))
-    candidates.sort(key=lambda x: (x.score, len(x.pattern), x.count), reverse=True)
-    candidates = candidates[:candidate_pool]
-
-    chosen: List[Candidate] = []
-    token_to_pattern: Dict[str, str] = {}
-    baseline = estimate_encoded_units(fasta_path, token_to_pattern, max_seqs=max_seqs)
-
-    for cand in candidates:
-        if len(chosen) >= max_terms:
-            break
-        token = f"X_{len(chosen) + 1:04d}"
-        trial = dict(token_to_pattern)
-        trial[token] = cand.pattern
-        new_units = estimate_encoded_units(fasta_path, trial, max_seqs=max_seqs)
-        if new_units < baseline:
-            token_to_pattern = trial
-            chosen.append(cand)
-            baseline = new_units
-
-    return chosen
-
-
-def select_dictionary_fast(
-    raw_counts: Dict[str, int],
-    max_terms: int,
-    candidate_pool: int,
-) -> List[Candidate]:
-    """
-    Fast selector for very large FASTA files.
-    Prioritizes (score, length, count) and avoids near-duplicate motifs by
-    rejecting any candidate that is a substring of an already selected motif.
-    """
-    candidates: List[Candidate] = []
-    for pat, ct in raw_counts.items():
-        gain = (len(pat) - 1) * ct
-        if gain > 0:
-            candidates.append(Candidate(pattern=pat, count=ct, score=gain))
-    candidates.sort(key=lambda x: (x.score, len(x.pattern), x.count), reverse=True)
-    candidates = candidates[:candidate_pool]
-
-    chosen: List[Candidate] = []
-    for cand in candidates:
-        if len(chosen) >= max_terms:
-            break
-        skip = False
-        for sel in chosen:
-            if cand.pattern in sel.pattern:
-                skip = True
-                break
-        if not skip:
-            chosen.append(cand)
-    return chosen
-
-
-def mine_dictionary(
-    fasta_path: Path,
-    dict_out: Path,
-    min_len: int,
-    max_len: int,
-    min_count: int,
-    max_terms: int,
-    candidate_pool: int,
-    max_seqs: int | None = None,
-    selection: str = "fast",
-) -> Dict:
-    raw_counts = count_kmers(fasta_path, min_len, max_len, min_count, max_seqs=max_seqs)
-    if selection == "exact":
-        chosen = select_dictionary(fasta_path, raw_counts, max_terms, candidate_pool, max_seqs=max_seqs)
-    else:
-        chosen = select_dictionary_fast(raw_counts, max_terms, candidate_pool)
-
-    dictionary = []
-    for idx, c in enumerate(chosen, start=1):
-        dictionary.append(
-            {
-                "token": f"X_{idx:04d}",
-                "pattern": c.pattern,
-                "count": c.count,
-                "score": c.score,
-                "length": len(c.pattern),
-            }
-        )
-
-    out = {
-        "format": "PatternMachine-v1",
-        "source_file": str(fasta_path),
-        "params": {
-            "min_len": min_len,
-            "max_len": max_len,
-            "min_count": min_count,
-            "max_terms": max_terms,
-            "candidate_pool": candidate_pool,
-            "max_seqs": max_seqs,
-            "selection": selection,
-        },
-        "dictionary": dictionary,
+    summary = {
+        "metadata_rows": len(metadata_by_accession),
+        "duplicate_sequence_entries": len(sequence_entries),
+        "enriched_sequence_entries": enriched_entries,
+        "matched_accessions": len(matched_accessions),
+        "missing_accessions": len(missing_accessions),
     }
-    dict_out.write_text(json.dumps(out, indent=2), encoding="utf-8")
-    return out
+    data["metadata_source_file"] = str(metadata_csv.name)
+    data["metadata_key"] = "Accession"
+    data["metadata_summary"] = summary
+    return summary
 
 
-def apply_dictionary(
+def parse_fasta_entries(path: Path, max_seqs: int | None = None) -> Iterable[tuple[str, str]]:
+    """Yield (identifier, cleaned_sequence) records from FASTA."""
+    current_id: str | None = None
+    seq_parts: list[str] = []
+    seen = 0
+
+    with path.open("r", encoding="utf-8", errors="ignore") as fh:
+        for raw in fh:
+            line = raw.strip()
+            if not line:
+                continue
+
+            if line.startswith(">"):
+                if current_id is not None and seq_parts:
+                    yield current_id, clean_dna("".join(seq_parts))
+                    seen += 1
+                    if max_seqs is not None and seen >= max_seqs:
+                        return
+                current_id = extract_fasta_identifier(line)
+                seq_parts = []
+            else:
+                seq_parts.append(line)
+
+    if current_id is not None and seq_parts:
+        yield current_id, clean_dna("".join(seq_parts))
+
+
+def build_duplicate_sequence_json(
     fasta_path: Path,
-    dict_path: Path,
     out_path: Path,
+    metadata_csv: Path | None = None,
     max_seqs: int | None = None,
-) -> Dict[str, int]:
-    data = json.loads(dict_path.read_text(encoding="utf-8"))
-    token_to_pattern = {d["token"]: d["pattern"] for d in data["dictionary"]}
-    trie = build_trie(token_to_pattern)
+    show_progress: bool = False,
+) -> dict:
+    grouped: dict[str, list[str]] = collections.defaultdict(list)
+    total_sequences = 0
 
-    total_bases = 0
-    total_units = 0
-    token_counts = collections.Counter()
+    entries = parse_fasta_entries(fasta_path, max_seqs=max_seqs)
+    if show_progress and tqdm is not None:
+        entries = tqdm(entries, desc="Reading FASTA", unit="seq")
 
-    with out_path.open("w", encoding="utf-8") as out:
-        for idx, seq in enumerate(parse_fasta_sequences(fasta_path, max_seqs=max_seqs), start=1):
-            s = clean_dna(seq)
-            if not s:
-                continue
-            tokens = tokenize_longest_match(s, trie)
-            total_bases += len(s)
-            total_units += len(tokens)
-            for t in tokens:
-                if t.startswith("X_"):
-                    token_counts[t] += 1
-            out.write(f">translated_{idx}\n")
-            out.write(" ".join(tokens) + "\n")
+    for identifier, sequence in entries:
+        if not sequence:
+            continue
+        grouped[sequence].append(identifier)
+        total_sequences += 1
 
-    return {
-        "total_bases": total_bases,
-        "total_units": total_units,
-        "dictionary_size": len(token_to_pattern),
-        "token_uses": int(sum(token_counts.values())),
+    sequence_rows = [
+        {
+            "sequence": sequence,
+            "count": len(identifiers),
+            "identifiers": identifiers,
+        }
+        for sequence, identifiers in grouped.items()
+    ]
+    sequence_rows.sort(key=lambda row: (row["count"], len(row["sequence"])), reverse=True)
+
+    data = {
+        "source_file": fasta_path.name,
+        "max_seqs": max_seqs,
+        "total_sequences": total_sequences,
+        "unique_sequences": len(sequence_rows),
+        "duplicate_sequences": total_sequences - len(sequence_rows),
+        "sequences": sequence_rows,
     }
 
+    metadata_summary = None
+    if metadata_csv is not None:
+        metadata_summary = enrich_duplicate_data(data, metadata_csv)
 
-def print_top_repeats(raw_counts: Dict[str, int], top_n: int = 15) -> None:
-    ranked = sorted(raw_counts.items(), key=lambda x: (len(x[0]), x[1]), reverse=True)
-    print("\nTop repeated motifs (longest first):")
-    for pat, ct in ranked[:top_n]:
-        print(f"  {pat:<24} {ct:>10}x")
+    out_path.write_text(json.dumps(data, indent=2), encoding="utf-8")
+    if metadata_summary is not None:
+        print(json.dumps(metadata_summary, indent=2))
+    return data
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Mine and apply repeated FASTA pattern dictionaries.")
-    sub = parser.add_subparsers(dest="cmd", required=True)
-
-    p_mine = sub.add_parser("mine", help="Find repeated patterns and build dictionary.")
-    p_mine.add_argument("input", help="Input FASTA file.")
-    p_mine.add_argument("--dict-out", default="motif_dictionary.json", help="Output dictionary JSON.")
-    p_mine.add_argument("--min-len", type=int, default=6)
-    p_mine.add_argument("--max-len", type=int, default=12)
-    p_mine.add_argument("--min-count", type=int, default=20)
-    p_mine.add_argument("--max-terms", type=int, default=128)
-    p_mine.add_argument("--candidate-pool", type=int, default=400)
-    p_mine.add_argument("--show-top", type=int, default=15)
-    p_mine.add_argument("--max-seqs", type=int, default=0, help="If >0, limit sequences scanned.")
-    p_mine.add_argument("--selection", choices=["fast", "exact"], default="fast")
-
-    p_apply = sub.add_parser("apply", help="Translate FASTA using existing dictionary.")
-    p_apply.add_argument("input", help="Input FASTA file.")
-    p_apply.add_argument("--dict", required=True, help="Dictionary JSON from mine step.")
-    p_apply.add_argument("--out", default="translated_tokens.txt", help="Output translated text.")
-    p_apply.add_argument("--max-seqs", type=int, default=0, help="If >0, limit sequences translated.")
-
-    p_report = sub.add_parser("report", help="Show dictionary contents.")
-    p_report.add_argument("--dict", required=True, help="Dictionary JSON.")
-    p_report.add_argument("--top", type=int, default=30)
-
+    parser = argparse.ArgumentParser(
+        description="Create sequences_duplicates.json from identical FASTA DNA sequences."
+    )
+    parser.add_argument(
+        "fasta",
+        type=Path,
+        nargs="?",
+        default=Path("sequences.fasta"),
+        help="Input FASTA path",
+    )
+    parser.add_argument(
+        "--out",
+        type=Path,
+        default=Path("sequences_duplicates.json"),
+        help="Output duplicate JSON path",
+    )
+    parser.add_argument(
+        "--metadata-csv",
+        type=Path,
+        default=None,
+        help="Optional CSV with Accession metadata to attach to each identifier",
+    )
+    parser.add_argument("--max-seqs", type=int, default=None)
+    parser.add_argument("--progress", action="store_true")
     args = parser.parse_args()
 
-    if args.cmd == "mine":
-        src = Path(args.input)
-        max_seqs = args.max_seqs if args.max_seqs > 0 else None
-        raw_counts = count_kmers(src, args.min_len, args.max_len, args.min_count, max_seqs=max_seqs)
-        print_top_repeats(raw_counts, top_n=args.show_top)
-        result = mine_dictionary(
-            fasta_path=src,
-            dict_out=Path(args.dict_out),
-            min_len=args.min_len,
-            max_len=args.max_len,
-            min_count=args.min_count,
-            max_terms=args.max_terms,
-            candidate_pool=args.candidate_pool,
-            max_seqs=max_seqs,
-            selection=args.selection,
-        )
-        print(f"\nDictionary saved: {args.dict_out}")
-        print(f"Selected terms: {len(result['dictionary'])}")
-        for item in result["dictionary"][: min(20, len(result["dictionary"]))]:
-            print(f"  {item['token']} -> {item['pattern']}  (count={item['count']}, score={item['score']})")
-        return
-
-    if args.cmd == "apply":
-        max_seqs = args.max_seqs if args.max_seqs > 0 else None
-        stats = apply_dictionary(Path(args.input), Path(args.dict), Path(args.out), max_seqs=max_seqs)
-        ratio = stats["total_bases"] / max(stats["total_units"], 1)
-        print(f"Translated output: {args.out}")
-        print(
-            f"Bases={stats['total_bases']:,}, Encoded units={stats['total_units']:,}, "
-            f"Effective ratio={ratio:.2f}x, Token uses={stats['token_uses']:,}"
-        )
-        return
-
-    if args.cmd == "report":
-        data = json.loads(Path(args.dict).read_text(encoding="utf-8"))
-        print(f"Dictionary: {args.dict}")
-        print(f"Terms: {len(data.get('dictionary', []))}")
-        for item in data.get("dictionary", [])[: args.top]:
-            print(
-                f"  {item['token']} -> {item['pattern']} "
-                f"(len={item.get('length', len(item['pattern']))}, count={item.get('count', 'n/a')})"
-            )
+    data = build_duplicate_sequence_json(
+        fasta_path=args.fasta,
+        out_path=args.out,
+        metadata_csv=args.metadata_csv,
+        max_seqs=args.max_seqs,
+        show_progress=args.progress,
+    )
+    print(f"Duplicate dictionary saved: {args.out}")
+    print(f"Total sequences: {data['total_sequences']}")
+    print(f"Unique sequences: {data['unique_sequences']}")
+    print(f"Duplicate rows: {data['duplicate_sequences']}")
 
 
 if __name__ == "__main__":
     main()
-
