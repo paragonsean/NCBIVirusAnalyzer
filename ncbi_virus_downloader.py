@@ -58,10 +58,10 @@ _CLI_URLS = {
 
 VIRUS_TYPES = {
     "Influenza A virus":       "11320",
-    "Influenza A – H3N2":      "41857",
-    "Influenza A – H1N1":      "114727",
-    "Influenza A – H5N1":      "102793",
-    "Influenza A – H7N9":      "1332244",
+    "Influenza A H3N2":      "41857",
+    "Influenza A H1N1":      "114727",
+    "Influenza A H5N1":      "102793",
+    "Influenza A H7N9":      "1332244",
     "Influenza B virus":       "11520",
     "SARS-CoV-2":              "sars-cov-2",
     "MERS-CoV":                "1335626",
@@ -187,12 +187,20 @@ def ensure_cli(progress_callback=None):
 # ──────────────────────────────────────────────────────────────
 
 def run_datasets_download(cli_paths, taxon, geo_location, released_after,
-                          output_zip, complete_only=False, log_callback=None):
+                          output_zip, complete_only=False, log_callback=None,
+                          progress_callback=None):
+    ansi_re = re.compile(r"\x1b\[[0-?]*[ -/]*[@-~]")
+
+    def _clean_cli_line(raw):
+        text = ansi_re.sub("", raw)
+        # Remove other non-printable control chars except tab/newline spacing.
+        text = "".join(ch for ch in text if ch >= " " or ch in ("\t",))
+        return text.strip()
+
     cmd = [
         cli_paths["datasets"], "download", "virus", "genome",
         "taxon", taxon,
         "--filename", output_zip,
-        "--no-progressbar",
     ]
     if geo_location and geo_location != "Any Location":
         cmd += ["--geo-location", geo_location]
@@ -202,10 +210,45 @@ def run_datasets_download(cli_paths, taxon, geo_location, released_after,
         cmd += ["--complete-only"]
     if log_callback:
         log_callback(f"Running: {' '.join(cmd)}")
-    result = subprocess.run(cmd, capture_output=True, text=True, timeout=600)
-    if result.returncode != 0:
-        err = result.stderr.strip() or result.stdout.strip()
+    if progress_callback:
+        progress_callback(0, "Starting NCBI download…")
+
+    proc = subprocess.Popen(
+        cmd,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+        bufsize=1,
+    )
+    output_lines = []
+    pct_re = re.compile(r"(\d{1,3})%")
+    try:
+        for line in proc.stdout:
+            text = _clean_cli_line(line)
+            if not text:
+                continue
+            output_lines.append(text)
+            if log_callback:
+                log_callback(text)
+            if progress_callback:
+                match = pct_re.search(text)
+                if match:
+                    pct = max(0, min(100, int(match.group(1))))
+                    progress_callback(pct, f"Downloading from NCBI… {pct}%")
+        proc.wait(timeout=600)
+    except subprocess.TimeoutExpired:
+        proc.kill()
+        raise RuntimeError("datasets CLI timed out after 10 minutes.")
+
+    if proc.returncode != 0:
+        err = "\n".join(output_lines[-12:]).strip()
+        if not err:
+            err = "Unknown datasets CLI error."
         raise RuntimeError(f"datasets CLI error:\n{err}")
+
+    if progress_callback:
+        progress_callback(100, "Download complete.")
+
     if not os.path.isfile(output_zip):
         raise FileNotFoundError("Download produced no output file.")
     return output_zip
@@ -511,7 +554,13 @@ class App(tk.Tk):
         self.dl_both_btn.pack(side="left")
 
         # Progress
-        self.dl_progress = ttk.Progressbar(form, length=670, mode="indeterminate")
+        self.dl_progress_var = tk.DoubleVar(value=0)
+        self.dl_progress = ttk.Progressbar(
+            form,
+            length=670,
+            mode="determinate",
+            maximum=100,
+            variable=self.dl_progress_var)
         self.dl_progress.grid(row=r, column=0, columnspan=2, sticky="w", pady=(4, 2)); r += 1
 
         # Status
@@ -528,6 +577,13 @@ class App(tk.Tk):
 
         self._dl_buttons = (self.dl_fasta_btn, self.dl_csv_btn, self.dl_both_btn)
         self._dl_set_enabled(False)
+
+    def _dl_update_progress(self, percent, status=None):
+        def _do():
+            self.dl_progress_var.set(max(0.0, min(100.0, float(percent))))
+            if status:
+                self.dl_status_var.set(status)
+        self.after(0, _do)
 
     def _dl_set_enabled(self, enabled):
         s = "normal" if enabled else "disabled"
@@ -596,7 +652,7 @@ class App(tk.Tk):
                      "csv":   os.path.join(folder, base + ".csv")}
 
         self._dl_set_enabled(False)
-        self.dl_progress.start(15)
+        self.dl_progress_var.set(0)
         threading.Thread(target=self._dl_thread,
                          args=(fmt, paths), daemon=True).start()
 
@@ -612,36 +668,36 @@ class App(tk.Tk):
             self._log_to(self.dl_log,
                          f"Virus: {virus} (taxon {taxon}) | "
                          f"{location} | after {released_after or 'any'}")
-            self.after(0, lambda: self.dl_status_var.set(
-                "Downloading from NCBI (this may take a moment)…"))
+            self._dl_update_progress(5, "Downloading from NCBI (this may take a moment)…")
 
             tmp_zip = os.path.join(tempfile.gettempdir(),
                                    f"ncbi_dl_{os.getpid()}.zip")
             run_datasets_download(
                 self._cli_paths, taxon, location, released_after,
                 tmp_zip, complete_only=complete,
-                log_callback=lambda m: self._log_to(self.dl_log, m))
+                log_callback=lambda m: self._log_to(self.dl_log, m),
+                progress_callback=lambda p, s: self._dl_update_progress(
+                    p * 0.8, s))
 
             with zipfile.ZipFile(tmp_zip) as z:
                 self._log_to(self.dl_log, f"Zip contents: {z.namelist()}")
 
             if "fasta" in paths:
-                self.after(0, lambda: self.dl_status_var.set("Extracting FASTA…"))
+                self._dl_update_progress(85, "Extracting FASTA…")
                 extract_fasta(tmp_zip, paths["fasta"])
                 kb = os.path.getsize(paths["fasta"]) / 1024
                 self._log_to(self.dl_log,
                              f"FASTA saved: {paths['fasta']} ({kb:,.0f} KB)")
 
             if "csv" in paths:
-                self.after(0, lambda: self.dl_status_var.set(
-                    "Converting metadata to CSV…"))
+                self._dl_update_progress(92, "Converting metadata to CSV…")
                 extract_csv(self._cli_paths, tmp_zip, paths["csv"])
                 kb = os.path.getsize(paths["csv"]) / 1024
                 self._log_to(self.dl_log,
                              f"CSV saved: {paths['csv']} ({kb:,.0f} KB)")
 
             saved = " and ".join(os.path.basename(p) for p in paths.values())
-            self.after(0, lambda: self.dl_status_var.set(f"Done! Saved: {saved}"))
+            self._dl_update_progress(100, f"Done! Saved: {saved}")
             self.after(0, lambda: messagebox.showinfo(
                 "Download Complete",
                 "Files saved:\n" + "\n".join(paths.values())))
@@ -661,7 +717,7 @@ class App(tk.Tk):
             if tmp_zip and os.path.isfile(tmp_zip):
                 try: os.remove(tmp_zip)
                 except OSError: pass
-            self.after(0, lambda: self.dl_progress.stop())
+            self.after(0, lambda: self.dl_progress_var.set(100))
             self.after(0, lambda: self._dl_set_enabled(True))
 
     # ────────────────────────────────────────────────────────
@@ -973,6 +1029,9 @@ class App(tk.Tk):
             filetypes=[("CSV", "*.csv"), ("All", "*.*")])
         if p:
             self.fc_csv_var.set(p)
+            json_path = self.fc_json_var.get().strip()
+            if json_path and os.path.isfile(json_path):
+                self._fc_try_autofill(p, json_path, show_errors=False)
 
     def _fc_browse_json(self):
         p = filedialog.askopenfilename(
@@ -980,6 +1039,9 @@ class App(tk.Tk):
             filetypes=[("JSON", "*.json"), ("All", "*.*")])
         if p:
             self.fc_json_var.set(p)
+            csv_path = self.fc_csv_var.get().strip()
+            if csv_path and os.path.isfile(csv_path):
+                self._fc_try_autofill(csv_path, p, show_errors=False)
 
     def _fc_browse_output(self):
         p = filedialog.asksaveasfilename(
@@ -989,6 +1051,133 @@ class App(tk.Tk):
             filetypes=[("CSV", "*.csv"), ("All", "*.*")])
         if p:
             self.fc_out_var.set(p)
+
+    def _extract_year_from_value(self, value):
+        if value is None:
+            return None
+        text = str(value).strip()
+        if not text:
+            return None
+        match = re.search(r"\b(19\d{2}|20\d{2}|2100)\b", text)
+        if not match:
+            return None
+        year = int(match.group(1))
+        return year if 1900 <= year <= 2100 else None
+
+    def _infer_from_metadata_csv(self, metadata_csv):
+        years = set()
+        release_years = set()
+        countries = set()
+
+        with open(metadata_csv, "r", encoding="utf-8", errors="ignore", newline="") as fh:
+            reader = csv.DictReader(fh)
+            if not reader.fieldnames:
+                return years, countries
+
+            def norm_col(name):
+                return re.sub(r"[^a-z0-9]+", "", str(name).casefold())
+
+            norm_map = {norm_col(name): name for name in reader.fieldnames if name}
+            release_col = norm_map.get("releasedate")
+            year_col = (
+                norm_map.get("isolatecollectiondate")
+                or norm_map.get("collectiondate")
+                or norm_map.get("year")
+            )
+            country_col = (
+                norm_map.get("geolocation")
+                or norm_map.get("geographiclocation")
+                or norm_map.get("country")
+            )
+
+            for row in reader:
+                if release_col:
+                    release_year = self._extract_year_from_value(row.get(release_col))
+                    if release_year is not None:
+                        release_years.add(release_year)
+                if year_col:
+                    year = self._extract_year_from_value(row.get(year_col))
+                    if year is not None:
+                        years.add(year)
+                if country_col:
+                    raw_country = str(row.get(country_col, "")).strip()
+                    if raw_country:
+                        countries.add(raw_country.split(":")[0].strip())
+        # Prefer release years when available because download filtering uses release date.
+        return (release_years or years), countries
+
+    def _infer_from_duplicates_json(self, duplicates_json):
+        years = set()
+        countries = set()
+        with open(duplicates_json, "r", encoding="utf-8") as fh:
+            data = json.load(fh)
+        for seq_entry in data.get("sequences", []):
+            meta_by_acc = seq_entry.get("metadata_by_accession") or {}
+            for meta in meta_by_acc.values():
+                if not isinstance(meta, dict):
+                    continue
+                year = self._extract_year_from_value(
+                    meta.get("isolate-collection-date") or meta.get("collection_date") or meta.get("year")
+                )
+                if year is not None:
+                    years.add(year)
+                raw_country = str(
+                    meta.get("geo-location") or meta.get("geo_location") or meta.get("country") or ""
+                ).strip()
+                if raw_country:
+                    countries.add(raw_country.split(":")[0].strip())
+        return years, countries
+
+    def _infer_forecast_scope(self, metadata_csv, duplicates_json):
+        years, countries = self._infer_from_metadata_csv(metadata_csv)
+        if not years or not countries:
+            json_years, json_countries = self._infer_from_duplicates_json(duplicates_json)
+            years |= json_years
+            countries |= json_countries
+        return sorted(years), sorted(countries, key=lambda c: c.casefold())
+
+    def _fc_try_autofill(self, metadata_csv, duplicates_json, show_errors=False):
+        try:
+            inferred_years, inferred_countries = self._infer_forecast_scope(
+                metadata_csv, duplicates_json)
+            if not inferred_years:
+                raise ValueError(
+                    "Could not infer years from input files. "
+                    "Ensure metadata has isolate-collection-date/year values.")
+            if not inferred_countries:
+                raise ValueError(
+                    "Could not infer countries from input files. "
+                    "Ensure metadata has geo-location/country values.")
+
+            years_text = f"{inferred_years[0]}-{inferred_years[-1]}"
+            countries = inferred_countries
+            self.fc_years_var.set(years_text)
+            self.fc_countries_var.set(", ".join(countries))
+
+            if len(inferred_years) > 1:
+                training_text = f"{inferred_years[0]}-{inferred_years[-2]}"
+            else:
+                training_text = str(inferred_years[0])
+            backtest_year = inferred_years[-1]
+            dominant_year = inferred_years[-1]
+
+            self.fc_training_years_var.set(training_text)
+            self.fc_backtest_var.set(str(backtest_year))
+            self.fc_dominant_year_var.set(str(dominant_year))
+            self.fc_status_var.set(
+                f"Auto-filled from files: {len(countries)} countries, years {years_text}."
+            )
+            self._log_to(
+                self.fc_log,
+                f"Auto-detected years: {years_text}; countries: {len(countries)}"
+            )
+            return countries, years_text, training_text, backtest_year, dominant_year
+        except Exception as e:
+            if show_errors:
+                messagebox.showwarning("Auto-fill failed", str(e))
+            else:
+                self._log_to(self.fc_log, f"Auto-fill skipped: {e}")
+            return None
 
     def _on_fc_run(self):
         metadata_csv = self.fc_csv_var.get().strip()
@@ -1008,18 +1197,15 @@ class App(tk.Tk):
                 "Please choose where to save the forecast CSV.")
             return
 
+        inferred = self._fc_try_autofill(metadata_csv, duplicates_json, show_errors=True)
+        if inferred is None:
+            return
+        countries, years_text, training_years_text, backtest_year, dominant_year = inferred
+
         try:
-            countries = [c.strip() for c in self.fc_countries_var.get().split(",")
-                         if c.strip()]
-            years_text = self.fc_years_var.get().strip()
-            training_years_text = self.fc_training_years_var.get().strip()
-            backtest_year = int(self.fc_backtest_var.get().strip())
-            dominant_year = int(self.fc_dominant_year_var.get().strip())
             epochs = int(self.fc_epochs_var.get().strip())
             batch_size = int(self.fc_batch_var.get().strip())
             top_n = int(self.fc_topn_var.get().strip())
-            if not countries:
-                raise ValueError("Enter at least one country.")
             if epochs < 1 or batch_size < 1 or top_n < 1:
                 raise ValueError("Epochs, batch size, and top N must be positive.")
         except ValueError as e:

@@ -32,7 +32,17 @@ def _load_runtime_deps():
 
     import numpy as np
     import pandas as pd
-    import tensorflow as tf
+    try:
+        import tensorflow as tf
+    except Exception as exc:
+        raise RuntimeError(
+            "TensorFlow is not installed correctly in this Python environment. "
+            "Please reinstall it, then rerun forecast.\n"
+            "Suggested fix:\n"
+            "  python -m pip uninstall -y tensorflow tensorflow-intel keras\n"
+            "  python -m pip install --upgrade pip\n"
+            "  python -m pip install tensorflow"
+        ) from exc
     from sklearn.metrics import classification_report
     from sklearn.metrics import r2_score
     from sklearn.preprocessing import LabelEncoder
