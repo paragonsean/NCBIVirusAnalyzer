@@ -17,7 +17,7 @@ Supplied image placeholders included for:
 ---
 
 ## 1. Overview
-https://youtu.be/qRCJB6b0bh4
+Youtube Videos of usage: https://youtu.be/qRCJB6b0bh4 https://youtu.be/-b5xst1zXWI
 This document is a combined user manual and technical architecture draft for the viral forecasting program implemented across two Python source files: `ncbi_virus_downloader.py` and `predict_strain_growth.py`. Together, these files define a desktop workflow that starts with sequence acquisition from NCBI, moves through DNA sequence deduplication and metadata alignment, trains a neural network to estimate which strains are likely to become prominent, and then summarizes the forecast in a post-analysis dashboard.
 
 At the user level, the application presents a single Tkinter desktop window titled **NCBI Virus Tools**. That window is organized into four tabs:
