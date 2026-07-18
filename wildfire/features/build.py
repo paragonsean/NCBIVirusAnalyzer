@@ -20,6 +20,8 @@ DEFAULT_LAG_COLUMNS = [
     "t2m_c_mean",
     "fire_count",
     "burned_area_ha",
+    "fires_matched_count",
+    "burned_area_ha_matched",
 ]
 
 
@@ -110,6 +112,7 @@ def build_feature_table(
     grace_monthly: pd.DataFrame | None = None,
     era5_monthly: pd.DataFrame | None = None,
     burned_area_monthly: pd.DataFrame | None = None,
+    firms_burned_links_monthly: pd.DataFrame | None = None,
     target_column: str = "fire_count",
     lags: Iterable[int] = (1, 2, 3),
 ) -> pd.DataFrame:
@@ -119,8 +122,15 @@ def build_feature_table(
     if "fire_count" not in base:
         base["fire_count"] = 0
     table = _merge_monthly(base, burned_area_monthly)
+    table = _merge_monthly(table, firms_burned_links_monthly)
     table = _merge_monthly(table, grace_monthly)
     table = _merge_monthly(table, era5_monthly)
+    if "fires_matched_count" in table:
+        table["fires_matched_count"] = table["fires_matched_count"].fillna(0)
+    if "fire_match_rate" in table:
+        table["fire_match_rate"] = table["fire_match_rate"].fillna(0.0)
+    if "burned_area_ha_matched" in table:
+        table["burned_area_ha_matched"] = table["burned_area_ha_matched"].fillna(0.0)
 
     numeric_cols = [col for col in table.columns if col not in KEY_COLUMNS and col != "region_id"]
     for col in numeric_cols:

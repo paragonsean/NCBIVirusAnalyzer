@@ -9,6 +9,7 @@ from pathlib import Path
 import pandas as pd
 
 from wildfire.features.build import build_feature_table, save_feature_table
+from wildfire.features.link_fires_burned import build_firms_burned_link_monthly
 from wildfire.ingest.era5 import load_era5_monthly
 from wildfire.ingest.firms import load_firms_monthly
 from wildfire.ingest.grace import load_grace_monthly
@@ -25,14 +26,22 @@ def build_features_command(args) -> None:
     grace = load_grace_monthly(args.grace_nc, args.region_resolution) if args.grace_nc else None
     era5 = load_era5_monthly(args.era5_nc, args.region_resolution) if args.era5_nc else None
     burned = None
+    links = None
     if args.burned_area_csv:
         burned_pixels = pd.read_csv(args.burned_area_csv)
         burned = aggregate_burned_area_table(burned_pixels, args.region_resolution)
+        links = build_firms_burned_link_monthly(
+            args.firms_csv,
+            args.burned_area_csv,
+            region_resolution=args.region_resolution,
+            min_confidence=args.min_confidence,
+        )
     table = build_feature_table(
         fire,
         grace_monthly=grace,
         era5_monthly=era5,
         burned_area_monthly=burned,
+        firms_burned_links_monthly=links,
         target_column=args.target_column,
     )
     path = save_feature_table(table, args.output_csv)

@@ -30,6 +30,13 @@ Install the wildfire-specific dependencies:
 python -m pip install -r requirements-wildfire.txt
 ```
 
+MCD64A1 granules are HDF4. On Windows, install `pyhdf` from conda-forge if pip
+wheels are unavailable:
+
+```powershell
+conda install -n wildfire_ml -c conda-forge pyhdf
+```
+
 For full data acquisition, configure:
 
 - NASA Earthdata Login for `earthaccess`.

@@ -1,0 +1,7 @@
+[server]
+# Large pydeck map layers (FIRMS + burned area) can exceed Streamlit's default 200 MB cap.
+maxMessageSize = 1024
+
+[runner]
+# Use more of the machine for Streamlit fragment / parallel script work (16-core host).
+parallelMaxWorkers = 32
