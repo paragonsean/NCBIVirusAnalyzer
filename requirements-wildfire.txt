@@ -1,0 +1,16 @@
+pandas
+numpy
+xarray
+netCDF4
+h5netcdf
+earthaccess
+cdsapi
+geopandas
+shapely
+rasterio
+rioxarray
+scikit-learn
+matplotlib
+pytest
+streamlit
+streamlit-folium

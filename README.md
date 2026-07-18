@@ -1,5 +1,102 @@
 # Viral Forecasting Program User and Technical Documentation Draft
 
+## Wildfire Earthdata ML Pipeline
+
+This branch adds a North America wildfire analysis pipeline alongside the
+original NCBI virus tools. The wildfire workflow is designed to test whether
+groundwater/root-zone moisture and atmospheric aridity signals can help predict
+monthly regional fire activity and then backtest those predictions against the
+latest available 2026 fire season observations.
+
+### Data Sources
+
+- Fire target: NASA FIRMS archive CSV for active fire detections. The pipeline
+  reads latitude, longitude, acquisition date, brightness, and confidence, then
+  aggregates points to monthly region-level `fire_count` targets.
+- Optional burned-area target: NASA MCD64A1 monthly burned area. The helper in
+  `wildfire/ingest/mcd64a1.py` aggregates extracted burned-area pixels by
+  month-region.
+- Groundwater predictors: NASA GES DISC `GRACEDADM_CLSM025GL_7D`, using
+  `gws_inst` and `rtzsm_inst`.
+- Atmospheric aridity predictors: Copernicus ERA5 monthly single-level
+  temperature and dewpoint. `wildfire/ingest/era5.py` computes vapor pressure
+  deficit (VPD) from `2m_temperature` and `2m_dewpoint_temperature`.
+
+### Setup
+
+Install the wildfire-specific dependencies:
+
+```powershell
+python -m pip install -r requirements-wildfire.txt
+```
+
+For full data acquisition, configure:
+
+- NASA Earthdata Login for `earthaccess`.
+- Copernicus CDS API credentials for `cdsapi`.
+- A FIRMS archive CSV downloaded for North America from 2015-01-01 through the
+  latest available date.
+
+The unit tests do not require live credentials or network access.
+
+### Streamlit Downloader App
+
+Launch the wildfire download UI from the `wildfire_ml` environment:
+
+```powershell
+C:\Users\spoca\anaconda3\envs\wildfire_ml\python.exe -m streamlit run wildfire_downloader_streamlit.py
+```
+
+The app includes tabs for:
+
+- FIRMS active-fire CSV download through the FIRMS Area API.
+- GRACE `GRACEDADM_CLSM025GL_7D` download through NASA Earthdata.
+- ERA5 temperature/dewpoint NetCDF download through CDS.
+- MCD64A1 monthly burned-area granule download through NASA Earthdata.
+- Feature-table generation from downloaded files.
+- Baseline 2026 backtesting.
+
+### Build Features
+
+Start with a local FIRMS CSV and optional GRACE/ERA5 NetCDF files:
+
+```powershell
+python wildfire_pipeline.py build-features `
+  --firms-csv data/raw/firms_north_america_2015_2026.csv `
+  --grace-nc data/raw/grace/*.nc `
+  --era5-nc data/raw/era5/*.nc `
+  --output-csv data/processed/wildfire_monthly_training.csv
+```
+
+The output table includes monthly targets, predictor summaries, 1-3 month lags,
+rolling drought indicators, and a `severe_fire_month` label.
+
+### Backtest 2026
+
+```powershell
+python wildfire_pipeline.py backtest `
+  --feature-csv data/processed/wildfire_monthly_training.csv `
+  --output-dir wildfire_output `
+  --target-column fire_count `
+  --backtest-year 2026 `
+  --classifier
+```
+
+The regression backtest writes prediction CSVs and metrics JSON with MAE, RMSE,
+R2, and top-risk recall. The optional classifier writes severe-fire-month
+probabilities and classification metrics.
+
+### Important Limitations
+
+- 2026 backtests are only as complete as the latest available FIRMS, GRACE, and
+  ERA5 data. GRACE archive products can have latency.
+- FIRMS active-fire counts and MCD64A1 burned area answer related but different
+  questions. Use FIRMS first for quick iteration, then compare with MCD64A1 for
+  burned-area modeling.
+- The first model is intentionally a tabular baseline. It is easier to validate
+  and inspect than the original virus CNN and is a better starting point for
+  climate/hydrology features.
+
 Version: Draft prepared 2026-04-24 23:00
 
 Source files analyzed:

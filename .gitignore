@@ -3,3 +3,9 @@
 .csv
 .parquet
 .exe
+__pycache__/
+*.py[cod]
+.env
+data/
+.pytest_cache/
+wildfire_output/
